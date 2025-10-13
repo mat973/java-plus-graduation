@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gateway</artifactId>
+    <artifactId>gateway-server</artifactId>
     <packaging>jar</packaging>
 
     <name>gateway</name>
