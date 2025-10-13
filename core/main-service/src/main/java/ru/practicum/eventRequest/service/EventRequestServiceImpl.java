@@ -7,15 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
+import ru.practicum.event.repository.EventRepository;
 import ru.practicum.eventRequest.dto.EventRequestDto;
 import ru.practicum.eventRequest.dto.EventRequestUpdateDto;
 import ru.practicum.eventRequest.dto.EventRequestUpdateResult;
 import ru.practicum.eventRequest.mapper.EventRequestMapper;
-import ru.practicum.event.model.Event;
 import ru.practicum.eventRequest.model.EventRequest;
-import ru.practicum.event.model.State;
 import ru.practicum.eventRequest.model.Status;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.eventRequest.repository.EventRequestRepository;
 import ru.practicum.exeption.ConflictException;
 import ru.practicum.exeption.NotFoundException;
@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static ru.practicum.eventRequest.mapper.EventRequestMapper.mapToEventRequestDto;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,9 +44,7 @@ public class EventRequestServiceImpl implements EventRequestService {
 
     @Override
     public List<EventRequestDto> getUsersRequests(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User", userId);
-        }
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
         return eventRequestRepository.findAllByRequester_Id(userId).stream()
                 .map(EventRequestMapper::mapToEventRequestDto).toList();
     }
@@ -124,12 +123,9 @@ public class EventRequestServiceImpl implements EventRequestService {
     @Override
     public List<EventRequestDto> getAllByEventId(Long userId, Long eventId) {
         log.info("Поиск заявок на участие от пользователя id={} для Event id={}", userId, eventId);
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User", userId);
-        }
-        if (!eventRepository.existsById(eventId)) {
-            throw new NotFoundException("Event", userId);
-        }
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
+        eventRepository.findById(eventId).orElseThrow(() ->
+                new NotFoundException("EventRequest", eventId));
         return eventRequestRepository.findAllByEventId(eventId).stream()
                 .map(EventRequestMapper::mapToEventRequestDto)
                 .toList();

@@ -11,6 +11,7 @@ import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.service.CompilationService;
 
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/admin/compilations")

@@ -1,10 +1,6 @@
 package ru.practicum.location.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,7 +12,6 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Valid
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "locations")
 public class Location {
@@ -24,17 +19,11 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @DecimalMin(value = "-90.00000000", message = "Широта должна быть от -90 до 90")
-    @DecimalMax(value = "90.00000000", message = "Широта должна быть от -90 до 90")
-    @NotNull
     @Column(name = "lat", nullable = false)
-    Double lat;
+    Float lat;
 
-    @DecimalMin(value = "-180.00000000", message = "Долгота должна быть от -180 до 180")
-    @DecimalMax(value = "180.00000000", message = "Долгота должна быть от -180 до 180")
-    @NotNull
     @Column(name = "lon", nullable = false)
-    Double lon;
+    Float lon;
 
     @Override
     public boolean equals(Object o) {

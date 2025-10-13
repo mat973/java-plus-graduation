@@ -5,9 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.model.State;
-import ru.practicum.helper.RequestParamHelper;
 import ru.practicum.location.dto.LocationDto;
 import ru.practicum.user.model.UserDto.UserShortDto;
+
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ public class EventShortDto {
     CategoryDto category;
     Boolean paid;
 
-    @JsonFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     UserShortDto initiator;
@@ -30,10 +30,10 @@ public class EventShortDto {
     int participantLimit;
     State state;
 
-    @JsonFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
 
-    @JsonFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
 
     LocationDto location;

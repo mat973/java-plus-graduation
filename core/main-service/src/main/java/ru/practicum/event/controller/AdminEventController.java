@@ -17,9 +17,10 @@ import ru.practicum.comment.service.CommentService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventSearchParam;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.eventRequest.dto.UpdateEventRequest;
 import ru.practicum.event.service.EventService;
+import ru.practicum.eventRequest.dto.UpdateEventRequest;
 import ru.practicum.helper.RequestParamHelper;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,9 +39,9 @@ public class AdminEventController {
             @RequestParam(required = false) List<String> states,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT) LocalDateTime rangeStart,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false)
-            @DateTimeFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT) LocalDateTime rangeEnd,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
             @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
         Pageable page = PageRequest.of(from, size);
@@ -80,7 +81,7 @@ public class AdminEventController {
         return commentService.getCommentWithParamAdmin(commentSearchParam, page);
     }
 
-    @PatchMapping("/comments")
+    @PatchMapping("/comments/{commentId}")
     public List<CommentDto> updateCommentState(@Valid @RequestBody CommentUpdateRequestDto request) {
         log.info("Публикация комментариев в Админ API");
         return commentService.updateCommentState(request);

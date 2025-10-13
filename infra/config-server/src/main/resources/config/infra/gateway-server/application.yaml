@@ -1,3 +1,8 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty: DEBUG
+    org.springframework.web.server: DEBUG
 server:
   port: 8080
 spring:
@@ -5,10 +10,10 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false
 
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+        - id: main_service_all
+          uri: lb://MAIN-SERVICE
           predicates:
             - Path=/**

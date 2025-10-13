@@ -8,6 +8,7 @@ import ru.practicum.category.dto.CategoryCreateDto;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.service.CategoryService;
 
+
 @RestController
 @RequestMapping("/admin/categories")
 @RequiredArgsConstructor
