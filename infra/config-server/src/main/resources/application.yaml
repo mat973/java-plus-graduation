@@ -12,7 +12,7 @@ spring:
         native:
           searchLocations:
             - classpath:config/core/main-service/{application}
-            - classpath:config/stat/{application}
+            - classpath:config/stats/stats-service/{application}
             - classpath:config/infra/{application}
 server:
   port: 0
