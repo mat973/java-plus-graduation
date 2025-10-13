@@ -1,9 +1,9 @@
 package ru.practicum.event.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +15,11 @@ import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.service.CommentService;
 import ru.practicum.dto.RequestHitDto;
-import ru.practicum.event.dto.*;
-import ru.practicum.eventRequest.service.EventRequestService;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
 import ru.practicum.eventRequest.dto.*;
+import ru.practicum.eventRequest.service.EventRequestService;
 
 import java.time.LocalDateTime;
 import java.util.List;
