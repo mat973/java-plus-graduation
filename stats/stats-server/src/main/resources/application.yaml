@@ -1,6 +1,6 @@
 spring:
   application:
-    name: stats-service
+    name: stats-server
   profiles:
     active: dev
   config:

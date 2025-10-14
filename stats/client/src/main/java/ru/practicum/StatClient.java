@@ -30,7 +30,7 @@ public class StatClient {
         if (!initialized) {
             synchronized (lock) {
                 if (!initialized) {
-                    List<ServiceInstance> instances = discoveryClient.getInstances("STATS-SERVICE");
+                    List<ServiceInstance> instances = discoveryClient.getInstances("STATS-SERVER");
                     if (instances == null || instances.isEmpty()) {
                         throw new IllegalStateException("STATS-SERVICE не найден в DiscoveryClient");
                     }
