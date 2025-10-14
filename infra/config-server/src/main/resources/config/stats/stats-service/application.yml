@@ -10,11 +10,11 @@ spring:
     init:
       mode: always
       schema-locations: classpath:schema.sql
-    datasource:
-      url: jdbc:postgresql://localhost:5435/stats-db
-      username: dbuser
-      password: 12345
-      driver-class-name: org.postgresql.Driver
+  datasource:
+    url: jdbc:postgresql://localhost:8433/stat_db
+    username: dbuser
+    password: dbuser
+    driver-class-name: org.postgresql.Driver
 
 logging:
   level:
