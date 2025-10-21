@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import ru.practicum.dto.user.UserDto.UserDto;
+import ru.practicum.dto.user.exeptions.EmailMustBeUniqueException;
+import ru.practicum.dto.user.exeptions.UserNotExistException;
 import ru.practicum.mappers.UserMapper;
 import ru.practicum.model.User;
 import ru.practicum.repository.UserRepository;
@@ -16,6 +18,7 @@ import ru.practicum.service.UserService;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.mappers.UserMapper.mapToUser;
@@ -60,5 +63,11 @@ public class UserServiceImpl implements UserService {
             throw new UserNotExistException(userId);
         }
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public Optional<UserDto> gtUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.map(UserMapper::mapToUserDto);
     }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.dto.exeptions.dto;
+package ru.practicum.dto.user.exeptions.dto;
 
 import lombok.*;
 

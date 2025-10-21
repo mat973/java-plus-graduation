@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
-import ru.practicum.user.model.User;
 
 
 import java.time.LocalDateTime;
@@ -29,9 +28,11 @@ public class Comment {
     @Column(nullable = false)
     LocalDateTime created;
 
-    @ManyToOne
-    @JoinColumn(name = "creator_id", nullable = false)
-    User creator;
+    @Column(nullable = false)
+    String name;
+
+    @Column(name = "creator_id", nullable = false)
+    Long creatorId;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)

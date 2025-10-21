@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
@@ -21,8 +22,8 @@ import ru.practicum.exeption.ConflictException;
 import ru.practicum.exeption.NotFoundException;
 import ru.practicum.exeption.NotValidUserException;
 import ru.practicum.exeption.RequestModerationException;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
+import ru.practicum.feign.user.FeignUserClient;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ import static ru.practicum.eventRequest.mapper.EventRequestMapper.mapToEventRequ
 @Service
 @RequiredArgsConstructor
 public class EventRequestServiceImpl implements EventRequestService {
-    private final UserRepository userRepository;
+    private final FeignUserClient userClient;
     private final EventRepository eventRepository;
     private final EventRequestRepository eventRequestRepository;
 
@@ -44,8 +45,8 @@ public class EventRequestServiceImpl implements EventRequestService {
 
     @Override
     public List<EventRequestDto> getUsersRequests(Long userId) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
-        return eventRequestRepository.findAllByRequester_Id(userId).stream()
+        userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
+        return eventRequestRepository.findAllByRequesterId(userId).stream()
                 .map(EventRequestMapper::mapToEventRequestDto).toList();
     }
 
@@ -53,7 +54,7 @@ public class EventRequestServiceImpl implements EventRequestService {
     @Override
     public EventRequestDto createRequest(Long userId, Long eventId) {
         log.info("Начинаем создание заявки на участие в мероприятии id = {} от пользователя id = {}", eventId, userId);
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
+        UserDto user = userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("EventRequest", eventId));
         Optional<EventRequest> request = eventRequestRepository.findByEventIdAndRequesterId(eventId, userId);
@@ -66,7 +67,7 @@ public class EventRequestServiceImpl implements EventRequestService {
                     event.getParticipantLimit(), event.getConfirmedRequests());
             throw new RequestModerationException(eventId, "Лимит заявок исчерпан");
         }
-        if (eventRepository.findByIdAndInitiatorId(eventId, userId).isPresent()) {
+        if (eventRepository.findByIdAndInitiator(eventId, userId).isPresent()) {
             log.error("Заявка не была отправлена: нельзя отправить заявку на собственное мероприятие");
             throw new RequestModerationException(eventId, "Нельзя отправить заявку на собственное мероприятие");
         }
@@ -78,7 +79,7 @@ public class EventRequestServiceImpl implements EventRequestService {
 
         EventRequest eventRequest = EventRequest.builder()
                 .created(LocalDateTime.now())
-                .requester(user)
+                .requesterId(user.getId())
                 .event(event)
                 .status(Status.PENDING)
                 .build();
@@ -108,7 +109,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         log.info("Отменяем заявку id={} пользователем id={}", requestId, userId);
         EventRequest eventRequest = eventRequestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundException("EventRequest", requestId));
-        if (!eventRequest.getRequester().getId().equals(userId)) {
+        if (!eventRequest.getRequesterId().equals(userId)) {
             throw new NotValidUserException(userId);
         }
         int i = eventRequestRepository.updateStatus(requestId, Status.CANCELED);
@@ -123,7 +124,7 @@ public class EventRequestServiceImpl implements EventRequestService {
     @Override
     public List<EventRequestDto> getAllByEventId(Long userId, Long eventId) {
         log.info("Поиск заявок на участие от пользователя id={} для Event id={}", userId, eventId);
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
+        userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("EventRequest", userId));
         eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("EventRequest", eventId));
         return eventRequestRepository.findAllByEventId(eventId).stream()
@@ -142,13 +143,13 @@ public class EventRequestServiceImpl implements EventRequestService {
         String status = updateDto.getStatus();
         List<Long> requestIds = updateDto.getRequestIds();
 
-        User user = userRepository.findById(userId)
+        UserDto user = userClient.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User", userId));
         log.info("Определен инициатор события {}", user);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event", eventId));
 
-        if (!event.getInitiator().getId().equals(userId)) {
+        if (!event.getInitiator().equals(userId)) {
             log.error("Пользователь id={} не является инициатором события id={}", userId, eventId);
             throw new ConflictException("У пользователя нет доступа к данному событию");
         }

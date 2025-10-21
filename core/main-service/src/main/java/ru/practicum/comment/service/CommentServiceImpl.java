@@ -17,6 +17,7 @@ import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.mapper.CommentMapper;
 import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.repository.CommentRepository;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
@@ -24,8 +25,8 @@ import ru.practicum.eventRequest.model.EventRequest;
 import ru.practicum.eventRequest.model.Status;
 import ru.practicum.eventRequest.repository.EventRequestRepository;
 import ru.practicum.exeption.*;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
+import ru.practicum.feign.user.FeignUserClient;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepo;
-    private final UserRepository userRepo;
+    private final FeignUserClient userClient;
     private final EventRepository eventRepo;
     private final EventRequestRepository eventRequestRepository;
 
@@ -66,7 +67,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto createComment(Long userId, Long eventId, NewCommentDto dto) {
         log.info("Начинаем создание комментария {} от пользователя id={} для события id={}", dto, userId, eventId);
-        User user = userRepo.findById(userId)
+        UserDto user = userClient.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + userId + " not found"));
         log.info("Определен пользователь комментатор {}", user);
         Event event = eventRepo.findById(eventId)
@@ -94,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " not found"));
         log.info("Определен комментарий для обновления {}", comment);
-        if (!comment.getCreator().getId().equals(userId)) {
+        if (!comment.getCreatorId().equals(userId)) {
             log.error("Пользователь id={} не может обновить комментарий id={} так как не является его автором",
                     userId, commentId);
             throw new ForbiddenException("User not allowed to edit this comment");
@@ -130,7 +131,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment with id=" + commentId + " not found"));
 
-        if (!comment.getCreator().getId().equals(userId)) {
+        if (!comment.getCreatorId().equals(userId)) {
             log.error("Пользователь id={} не может удалить комментарий id={}", userId, commentId);
             throw new ForbiddenException("User not allowed to delete this comment");
         }

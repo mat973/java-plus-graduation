@@ -8,10 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.user.UserDto.UserDto;
+import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.service.UserService;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/admin")
@@ -42,6 +44,12 @@ public class AdminController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+    }
+
+
+    @GetMapping("/users/{id}")
+    public Optional<UserDto> getUserById(@PathVariable Long id) {
+        return userService.gtUserById(id);
     }
 
 

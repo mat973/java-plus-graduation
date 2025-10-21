@@ -7,8 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.dto.exeptions.EmailMustBeUniqueException;
-import ru.practicum.dto.exeptions.dto.ExceptionDto;
+import ru.practicum.dto.user.exeptions.EmailMustBeUniqueException;
+import ru.practicum.dto.user.exeptions.dto.ExceptionDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

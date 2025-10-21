@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventSearchParam;
 import ru.practicum.event.dto.EventShortDto;
@@ -26,11 +27,11 @@ import ru.practicum.eventRequest.dto.UpdateEventRequest;
 import ru.practicum.exeption.ConflictException;
 import ru.practicum.exeption.InvalidRequestException;
 import ru.practicum.exeption.NotFoundException;
+import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.location.mapper.LocationMapper;
 import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
-import ru.practicum.user.model.User;
-import ru.practicum.user.repository.UserRepository;
+
 
 
 import java.time.LocalDateTime;
@@ -43,7 +44,7 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
     EventRepository eventRepository;
     LocationRepository locationRepository;
-    UserRepository userRepository;
+    FeignUserClient userClient;
     CategoryRepository categoryRepository;
     ViewsRepository viewsRepository;
 
@@ -51,7 +52,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto addEvent(Long userId, NewEventRequest request) {
         log.info("Начинаем создание мероприятия {} пользователем id = {}", request, userId);
-        User initiator = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User", userId));
+        UserDto initiator = userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("User", userId));
         log.info("Получаем пользователя создателя мероприятия {}", initiator);
         Category category = categoryRepository.findById(request.getCategory())
                 .orElseThrow(() -> new NotFoundException("Category", request.getCategory()));
@@ -69,8 +70,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventRequest request) {
         Event event = getEvent(eventId);
         log.info("Валидация события (id {}) для обновления пользователем (id {})", event.getId(), userId);
-        if (!(userRepository.existsById(userId) &&
-                event.getInitiator().getId().equals(userId) &&
+        if (!(userClient.getUserById(userId).isPresent() &&
+                event.getInitiator().equals(userId) &&
                 !event.getState().equals(State.PUBLISHED))) {
             log.warn("Конфликт при запросе на обновление события");
             throw new ConflictException("Данное событие нельзя обновлять");
@@ -105,7 +106,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getByIdPrivate(Long userId, Long eventId, String ip) {
         log.info("Начинаем получение мероприятия id = {}", eventId);
-        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
+        Event event = eventRepository.findByIdAndInitiator(eventId, userId)
                 .orElseThrow(() -> new NotFoundException("Event", eventId));
         updateViews(event.getId(), ip);
         log.info("Мероприятие успешно получено: {}", event);
@@ -126,8 +127,8 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public List<EventShortDto> getUsersEvents(Long userId, Pageable page, String ip) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User", userId));
-        Page<Event> events = eventRepository.findByInitiatorId(userId, page);
+        userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("User", userId));
+        Page<Event> events = eventRepository.findByInitiator(userId, page);
         events.forEach(event -> updateViews(event.getId(), ip));
         log.info("Получаем все опубликованные мероприятия для пользователя id = {}: размер списка: {}, " +
                 "список меропритий: {}", userId, events.getSize(), events.getContent());
@@ -260,8 +261,14 @@ public class EventServiceImpl implements EventService {
             if (searchParam.getUsers() != null && !searchParam.getUsers().isEmpty() &&
                     searchParam.getUsers().getFirst() != 0) {
                 predicateLogs.add("Пользователи: " + searchParam.getUsers());
-                predicates.add(root.get("initiator").get("id").in(searchParam.getUsers()));
+                predicates.add(root.get("initiator").in(searchParam.getUsers()));
             }
+            //TODO
+//            if (searchParam.getUsers() != null && !searchParam.getUsers().isEmpty() &&
+//                    searchParam.getUsers().getFirst() != 0) {
+//                predicateLogs.add("Пользователи: " + searchParam.getUsers());
+//                predicates.add(root.get("initiator").in(searchParam.getUsers())); // ← ИСПРАВЛЕНО
+//            }
 
             log.info("Проводим фильтрацию по состояниям {}", searchParam.getStates());
             if (searchParam.getStates() != null && !searchParam.getStates().isEmpty()) {

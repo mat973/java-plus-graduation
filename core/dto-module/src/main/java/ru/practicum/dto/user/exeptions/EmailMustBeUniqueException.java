@@ -1,4 +1,4 @@
-package ru.practicum.dto.exeptions;
+package ru.practicum.dto.user.exeptions;
 
 public class EmailMustBeUniqueException extends RuntimeException {
     public EmailMustBeUniqueException(String email) {

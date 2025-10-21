@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.category.model.Category;
 import ru.practicum.location.model.Location;
-import ru.practicum.user.model.User;
+
 
 
 import java.time.LocalDateTime;
@@ -31,15 +31,15 @@ public class Event {
     @Column(name = "title", nullable = false)
     String title;
 
-    //краткая аннотация
+
     @Column(name = "annotation")
     String annotation;
 
-    //полное описание
+
     @Column(name = "description", nullable = false)
     String description;
 
-    //дата мероприятия
+
     @Column(name = "event_date", nullable = false)
     LocalDateTime eventDate;
 
@@ -51,23 +51,25 @@ public class Event {
     @JoinColumn(name = "location_id")
     Location location;
 
-    //платно или бесплатно, default = false
+
     @Column(name = "paid")
     Boolean paid;
 
-    //лимит участников, default = 0, при значении 0 количество не ограничено
+
     @Column(name = "participant_limit")
     int participantLimit;
 
-    //премодерация заявок, false = заявки принимаются автоматически, true = заявки требуют подтверждения
     @Column(name = "request_moderation")
     Boolean requestModeration;
 
-    @ManyToOne
-    @JoinColumn(name = "initiator_id")
-    User initiator;
 
-    //счетчик просмотров
+    @Column(name = "initiator_id")
+    Long initiator;
+
+    @Column(name = "initiator_name")
+    String initiatorName;
+
+
     @Column(name = "views")
     int views;
 
