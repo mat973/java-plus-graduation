@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS views;
 DROP TABLE IF EXISTS compilation_event;
 DROP TABLE IF EXISTS requests;
+DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS locations;
 DROP TABLE IF EXISTS compilations;

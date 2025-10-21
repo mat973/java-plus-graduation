@@ -5,13 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.event.dto.EventShortDto;
 
-import java.util.Set;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @Builder
 public class CompilationDto {
-    Set<EventShortDto> events;
+    List<EventShortDto> events;
     Long id;
     Boolean pinned;
     String title;

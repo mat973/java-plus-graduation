@@ -1,7 +1,5 @@
 package ru.practicum.location.dto;
 
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,15 +12,11 @@ import java.util.Objects;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NewLocationRequest {
-    @DecimalMin(value = "-90.00000000", message = "Широта должна быть от -90 до 90")
-    @DecimalMax(value = "90.00000000", message = "Широта должна быть от -90 до 90")
     @NotNull
-    Double lat;
+    Float lat;
 
-    @DecimalMin(value = "-180.00000000", message = "Долгота должна быть от -180 до 180")
-    @DecimalMax(value = "180.00000000", message = "Долгота должна быть от -180 до 180")
     @NotNull
-    Double lon;
+    Float lon;
 
     @Override
     public boolean equals(Object o) {

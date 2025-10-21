@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.event.dto.*;
+import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventSearchParam;
+import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
@@ -29,6 +31,7 @@ import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -123,14 +126,13 @@ public class EventServiceImpl implements EventService {
     @Transactional
     @Override
     public List<EventShortDto> getUsersEvents(Long userId, Pageable page, String ip) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User", userId);
-        }
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User", userId));
         Page<Event> events = eventRepository.findByInitiatorId(userId, page);
         events.forEach(event -> updateViews(event.getId(), ip));
         log.info("Получаем все опубликованные мероприятия для пользователя id = {}: размер списка: {}, " +
                 "список меропритий: {}", userId, events.getSize(), events.getContent());
         return events.stream()
+                .sequential()
                 .map(EventMapper::mapToShortDto)
                 .toList();
     }

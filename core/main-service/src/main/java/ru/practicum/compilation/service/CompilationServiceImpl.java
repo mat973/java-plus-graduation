@@ -15,6 +15,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exeption.NotFoundException;
 
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional
     public CompilationDto create(NewCompilationDto dto) {
         Compilation newCompilation = CompilationMapper.mapToCompilation(dto);
-        newCompilation.setEvents(getEventsByIds(dto.getEvents().stream().toList()));
+        newCompilation.setEvents(getEventsByIds(dto.getEvents()));
 
         return CompilationMapper.mapToDto(compilationRepository.save(newCompilation));
     }
@@ -99,7 +100,7 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setPinned(request.getPinned());
         }
         if (request.getEvents() != null) {
-            compilation.setEvents(getEventsByIds(request.getEvents().stream().toList()));
+            compilation.setEvents(getEventsByIds(request.getEvents()));
         }
     }
 }

@@ -8,8 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.practicum.helper.RequestParamHelper;
 import ru.practicum.location.dto.NewLocationRequest;
+
 
 import java.time.LocalDateTime;
 
@@ -24,8 +24,8 @@ public class UpdateEventRequest {
     @Size(min = 20, max = 7000)
     String description;
 
-    @JsonFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT)
-    @DateTimeFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     NewLocationRequest location;

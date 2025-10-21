@@ -17,15 +17,15 @@ import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.mapper.CommentMapper;
 import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.repository.CommentRepository;
+import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.eventRequest.model.EventRequest;
 import ru.practicum.eventRequest.model.Status;
 import ru.practicum.eventRequest.repository.EventRequestRepository;
 import ru.practicum.exeption.*;
-import ru.practicum.user.repository.UserRepository;
 import ru.practicum.user.model.User;
-import ru.practicum.event.model.Event;
+import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -148,6 +148,15 @@ public class CommentServiceImpl implements CommentService {
         }
         log.info("Удаление комментария id={} прошло успешно", commentId);
         commentRepo.deleteById(commentId);
+    }
+
+    @Override
+    public CommentDto getById(Long commentId) {
+        log.info("Начинаем получени комментария по id={}", commentId);
+        Comment comment = commentRepo.findByIdAndState(commentId, State.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException("Комментарий", commentId));
+        log.info("Получение комментария прошло успешно: {}", comment);
+        return CommentMapper.toDto(comment);
     }
 
     @Override

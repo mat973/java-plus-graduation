@@ -18,28 +18,35 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Service
 public class StatClient {
     private final DiscoveryClient discoveryClient;
-    private final RestClient client;
+    private RestClient client;
+    private volatile boolean initialized = false;
+    private final Object lock = new Object();
 
     public StatClient(DiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;
-        this.client = RestClient.builder()
-                .baseUrl(getServiceUrl("STATS-SERVICE"))
-                .build();
     }
 
-    private String getServiceUrl(String serviceName) {
-        List<ServiceInstance> instances = discoveryClient.getInstances(serviceName);
-        if (instances == null || instances.isEmpty()) {
-            log.error("Сервис {} не найден через DiscoveryClient", serviceName);
-            throw new IllegalStateException("Сервис " + serviceName + " не найден");
+    private void ensureInitialized() {
+        if (!initialized) {
+            synchronized (lock) {
+                if (!initialized) {
+                    List<ServiceInstance> instances = discoveryClient.getInstances("STATS-SERVER");
+                    if (instances == null || instances.isEmpty()) {
+                        throw new IllegalStateException("STATS-SERVICE не найден в DiscoveryClient");
+                    }
+                    ServiceInstance instance = instances.get(0);
+                    this.client = RestClient.builder()
+                            .baseUrl(instance.getUri().toString())
+                            .build();
+                    this.initialized = true;
+                    log.info("StatClient инициализирован для URL: {}", instance.getUri());
+                }
+            }
         }
-        ServiceInstance instance = instances.get(0);
-        String url = instance.getUri().toString();
-        log.info("Найден сервис {} по адресу {}", serviceName, url);
-        return url;
     }
 
     public void sendHit(RequestHitDto hit) {
+        ensureInitialized();
         log.info("Вызов записи хита в клиенте");
         try {
             client.post()
@@ -53,6 +60,7 @@ public class StatClient {
     }
 
     public List<ResponseDto> getStats(String start, String end, List<String> uris, boolean unique) {
+        ensureInitialized();
         log.info("Вызов получения статистики в клиенте");
         try {
             client.get()

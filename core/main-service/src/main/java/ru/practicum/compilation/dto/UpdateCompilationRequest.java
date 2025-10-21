@@ -1,12 +1,14 @@
 package ru.practicum.compilation.dto;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class UpdateCompilationRequest {
-    Set<Long> events;
+    List<Long> events;
     Boolean pinned;
+    @Size(max = 50, message = "Заголовок не должен превышать 50 символов")
     String title;
 }

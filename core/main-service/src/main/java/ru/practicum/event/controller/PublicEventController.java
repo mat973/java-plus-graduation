@@ -9,13 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.StatClient;
-import ru.practicum.dto.RequestHitDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventSearchParam;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
-import ru.practicum.helper.RequestParamHelper;
+import ru.practicum.StatClient;
+import ru.practicum.dto.RequestHitDto;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,9 +47,9 @@ public class PublicEventController {
                                                   @RequestParam(required = false) List<Long> categories,
                                                   @RequestParam(required = false) Boolean paid,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT) LocalDateTime rangeStart,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                   @RequestParam(required = false)
-                                                  @DateTimeFormat(pattern = RequestParamHelper.DATE_TIME_FORMAT) LocalDateTime rangeEnd,
+                                                  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                   @RequestParam(defaultValue = "false")
                                                   Boolean onlyAvailable,
                                                   @RequestParam(required = false) String sort,

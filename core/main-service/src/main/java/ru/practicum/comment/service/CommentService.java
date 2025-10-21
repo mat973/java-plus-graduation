@@ -6,6 +6,7 @@ import ru.practicum.comment.dto.CommentSearchParam;
 import ru.practicum.comment.dto.CommentUpdateRequestDto;
 import ru.practicum.comment.dto.NewCommentDto;
 
+
 import java.util.List;
 
 public interface CommentService {
@@ -21,6 +22,8 @@ public interface CommentService {
     void deleteComment(Long userId, Long commentId);
 
     void deleteCommentByAdmin(Long commentId);
+
+    CommentDto getById(Long commentId);
 
     List<CommentDto> updateCommentState(CommentUpdateRequestDto request);
 
