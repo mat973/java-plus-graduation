@@ -19,6 +19,8 @@
 		<module>infra</module>
 		<module>stats</module>
 		<module>core</module>
+		<module>core/user-service</module>
+		<module>core/dto-module</module>
 	</modules>
 
 	<properties>
