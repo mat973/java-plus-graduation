@@ -9,8 +9,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import ru.practicum.dto.user.UserDto.UserDto;
-import ru.practicum.dto.user.exeptions.EmailMustBeUniqueException;
-import ru.practicum.dto.user.exeptions.UserNotExistException;
+import ru.practicum.dto.exeptions.EmailMustBeUniqueException;
+import ru.practicum.dto.exeptions.UserNotExistException;
 import ru.practicum.mappers.UserMapper;
 import ru.practicum.model.User;
 import ru.practicum.repository.UserRepository;

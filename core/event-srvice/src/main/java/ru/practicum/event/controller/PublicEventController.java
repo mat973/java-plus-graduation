@@ -9,9 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventSearchParam;
-import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventSearchParam;
+import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.service.EventService;
 import ru.practicum.StatClient;
 import ru.practicum.dto.RequestHitDto;
@@ -19,6 +19,7 @@ import ru.practicum.dto.RequestHitDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -78,5 +79,21 @@ public class PublicEventController {
         log.info("Отправляем данные по запросу getEventsWithParam в сервис статистики {}", hitDto.toString());
         statClient.sendHit(hitDto);
         return eventService.getEventsWithParamPublic(eventSearchParam, page, request.getRemoteAddr());
+    }
+
+    @GetMapping("/{eventId}/feign")
+    public Optional<EventFullDto> getEventById(@PathVariable Long id){
+        return eventService.getEventByIdFeign(id);
+    }
+
+    @GetMapping("/{eventId}/{userId}/feign")
+    public Optional<EventFullDto> getEventByIdAndInitiator(@PathVariable Long eventId,
+                                                           @PathVariable Long userId){
+        return eventService.getEventByIdAndInitiator(eventId, userId);
+    }
+
+    @PutMapping("/{eventId}/{requestAmount}/feign")
+    public Boolean updateConfirmedRequests(@PathVariable Long eventId, @PathVariable Integer requestAmount){
+        return eventService.updateConfirmedRequests(eventId, requestAmount);
     }
 }

@@ -1,14 +1,15 @@
 package ru.practicum.event.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventSearchParam;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.eventRequest.dto.NewEventRequest;
-import ru.practicum.eventRequest.dto.UpdateEventRequest;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventSearchParam;
+import ru.practicum.dto.event.eventDto.EventShortDto;
+import ru.practicum.dto.request.requestDto.NewEventRequest;
+import ru.practicum.dto.request.requestDto.UpdateEventRequest;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EventService {
     EventFullDto addEvent(Long userId, NewEventRequest request);
@@ -26,4 +27,10 @@ public interface EventService {
     List<EventShortDto> getEventsWithParamAdmin(EventSearchParam eventSearchParam, Pageable page);
 
     List<EventShortDto> getEventsWithParamPublic(EventSearchParam eventSearchParam, Pageable page, String ip);
+
+    Optional<EventFullDto> getEventByIdFeign(Long id);
+
+    Optional<EventFullDto> getEventByIdAndInitiator(Long eventId, Long userId);
+
+    Boolean updateConfirmedRequests(Long eventId, Integer requestAmount);
 }

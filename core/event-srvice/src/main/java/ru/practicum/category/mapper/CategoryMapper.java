@@ -1,8 +1,8 @@
 package ru.practicum.category.mapper;
 
 
-import ru.practicum.category.dto.CategoryCreateDto;
-import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.dto.event.categoryDto.CategoryCreateDto;
+import ru.practicum.dto.event.categoryDto.CategoryDto;
 import ru.practicum.category.model.Category;
 
 public class CategoryMapper {

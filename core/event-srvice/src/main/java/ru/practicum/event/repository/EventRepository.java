@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
+
 
 
 import java.util.List;

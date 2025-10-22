@@ -1,0 +1,22 @@
+package ru.practicum.feign.event;
+
+import ru.practicum.dto.event.eventDto.EventFullDto;
+
+import java.util.Optional;
+
+public class FeignEventClientFallback implements FeignEventClient{
+    @Override
+    public Optional<EventFullDto> getEventById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<EventFullDto> getByIdAndInitiator(Long eventId, Long userId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Boolean updateConfirmedRequests(Long eventId, Integer requestAmount) {
+        return Boolean.FALSE;
+    }
+}

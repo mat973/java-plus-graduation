@@ -2,10 +2,10 @@ package ru.practicum.compilation.service;
 
 
 
-import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.CompilationRequestDto;
-import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.dto.event.compilationDto.CompilationDto;
+import ru.practicum.dto.event.compilationDto.CompilationRequestDto;
+import ru.practicum.dto.event.compilationDto.NewCompilationDto;
+import ru.practicum.dto.event.compilationDto.UpdateCompilationRequest;
 
 import java.util.List;
 

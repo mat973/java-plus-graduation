@@ -14,5 +14,6 @@
 
     <modules>
         <module>main-service</module>
+        <module>comment-service</module>
     </modules>
 </project>

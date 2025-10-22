@@ -4,13 +4,15 @@ package ru.practicum.event.mapper;
 
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
+import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.request.requestDto.NewEventRequest;
 import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.dto.user.UserDto.UserShortDto;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
-import ru.practicum.eventRequest.dto.NewEventRequest;
+
+
 import ru.practicum.location.mapper.LocationMapper;
 
 import ru.practicum.location.model.Location;

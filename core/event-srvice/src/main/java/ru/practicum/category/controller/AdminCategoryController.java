@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.category.dto.CategoryCreateDto;
-import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.dto.event.categoryDto.CategoryCreateDto;
+import ru.practicum.dto.event.categoryDto.CategoryDto;
 import ru.practicum.category.service.CategoryService;
 
 

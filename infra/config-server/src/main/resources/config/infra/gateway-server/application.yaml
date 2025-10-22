@@ -1,20 +1,72 @@
 server:
   port: 8080
+
 spring:
+  application:
+    name: api-gateway
+
   cloud:
     gateway:
       discovery:
         locator:
           enabled: false
 
+
+
       routes:
-        - id: user_service_admin
+
+
+        - id: user-service-admin
           uri: lb://USER-SERVICE
           predicates:
             - Path=/admin/users/**
+          filters:
+            - StripPrefix=0
 
 
-        - id: main_service_all
-          uri: lb://MAIN-SERVICE
+        - id: request-service
+          uri: lb://REQUEST-SERVICE
           predicates:
-            - Path=/**
+            - Path=/users/*/requests/**
+          filters:
+            - RewritePath=/users/(?<userId>[^/]+)/requests/(?<segment>.*), /api/users/${userId}/requests/${segment}
+            - RewritePath=/users/(?<userId>[^/]+)/requests, /api/users/${userId}/requests
+
+
+        - id: comment-service-admin
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/admin/events/**
+          filters:
+            - StripPrefix=0
+
+        - id: comment-service-user
+          uri: lb://COMMENT-SERVICE
+          predicates:
+            - Path=/users/*/events/**
+          filters:
+            - StripPrefix=0
+
+
+        - id: event-service-admin
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/admin/events/**
+          filters:
+            - StripPrefix=0
+
+
+        - id: event-service-public
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/events/**, /categories/**, /compilations/**
+          filters:
+            - StripPrefix=0
+
+
+        - id: event-service-private
+          uri: lb://EVENT-SERVICE
+          predicates:
+            - Path=/users/*/events/**
+          filters:
+            - StripPrefix=0

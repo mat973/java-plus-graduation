@@ -1,8 +1,8 @@
 package ru.practicum.location.mapper;
 
 
-import ru.practicum.location.dto.LocationDto;
-import ru.practicum.location.dto.NewLocationRequest;
+import ru.practicum.dto.event.locationDto.LocationDto;
+import ru.practicum.dto.event.locationDto.NewLocationRequest;
 import ru.practicum.location.model.Location;
 
 public class LocationMapper {

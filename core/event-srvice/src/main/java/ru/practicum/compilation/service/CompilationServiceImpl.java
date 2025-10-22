@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.CompilationRequestDto;
-import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.dto.UpdateCompilationRequest;
+import ru.practicum.dto.event.compilationDto.CompilationDto;
+import ru.practicum.dto.event.compilationDto.CompilationRequestDto;
+import ru.practicum.dto.event.compilationDto.NewCompilationDto;
+import ru.practicum.dto.event.compilationDto.UpdateCompilationRequest;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
+import ru.practicum.dto.exeptions.NotFoundException;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exeption.NotFoundException;
+
 
 
 import java.util.List;

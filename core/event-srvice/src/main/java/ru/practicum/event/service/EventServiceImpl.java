@@ -12,21 +12,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.exeptions.ConflictException;
+import ru.practicum.dto.exeptions.InvalidRequestException;
+import ru.practicum.dto.exeptions.NotFoundException;
+import ru.practicum.dto.request.requestDto.NewEventRequest;
+import ru.practicum.dto.request.requestDto.UpdateEventRequest;
 import ru.practicum.dto.user.UserDto.UserDto;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventSearchParam;
-import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventSearchParam;
+import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.State;
+
 import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.ViewsRepository;
-import ru.practicum.eventRequest.dto.NewEventRequest;
-import ru.practicum.eventRequest.dto.UpdateEventRequest;
-import ru.practicum.exeption.ConflictException;
-import ru.practicum.exeption.InvalidRequestException;
-import ru.practicum.exeption.NotFoundException;
+
 import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.location.mapper.LocationMapper;
 import ru.practicum.location.model.Location;
@@ -37,6 +39,7 @@ import ru.practicum.location.repository.LocationRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -164,6 +167,22 @@ public class EventServiceImpl implements EventService {
         events.forEach(event -> updateViews(event.getId(), ip));
         log.info("Возвращаем список мероприятий для Public API: {}", events);
         return events;
+    }
+
+    @Override
+    public Optional<EventFullDto> getEventByIdFeign(Long id) {
+        return eventRepository.findById(id).map(EventMapper::mapToFullDto);
+    }
+
+    @Override
+    public Optional<EventFullDto> getEventByIdAndInitiator(Long eventId, Long userId) {
+        return eventRepository.findByIdAndInitiator(eventId, userId).map(EventMapper::mapToFullDto);
+    }
+
+    @Override
+    public Boolean updateConfirmedRequests(Long eventId, Integer requestAmount) {
+        eventRepository.updateConfirmedRequests(eventId,requestAmount);
+        return true;
     }
 
     private Event getEvent(Long id) {
