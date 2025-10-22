@@ -1,6 +1,5 @@
 package ru.practicum.service;
 
-import com.sun.jdi.request.EventRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
@@ -59,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentDto> getCommentsByEvent(Long eventId) {
         log.info("Получаем все комментарии для события id={}", eventId);
-        return commentRepo.findByEventIdAndState(eventId, State.PUBLISHED).stream()
+        return commentRepo.findByEventAndState(eventId, State.PUBLISHED).stream()
                 .map(CommentMapper::toDto)
                 .collect(Collectors.toList());
     }

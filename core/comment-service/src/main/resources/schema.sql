@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS compilation_event (
     PRIMARY KEY (compilation_id, event_id)
 );
 
-CREATE TABLE views (
+CREATE TABLE IF NOT EXISTS views (
     id SERIAL PRIMARY KEY,
     event_id BIGINT NOT NULL,
     ip VARCHAR(45) NOT NULL,

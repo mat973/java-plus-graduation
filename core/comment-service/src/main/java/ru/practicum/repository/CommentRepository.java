@@ -22,7 +22,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findByCreatorIdAndState(Long creatorId, State state);
 
     /* все комментарии под событием */
-    List<Comment> findByEventIdAndState(Long eventId, State state);
+    List<Comment> findByEventAndState(Long eventId, State state);
 
     Optional<Comment> findByIdAndState(Long id, State state);
 
