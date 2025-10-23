@@ -62,6 +62,8 @@ public class PrivateEventController {
         return eventService.getUsersEvents(userId, page, request.getRemoteAddr());
     }
 
+
+
     @GetMapping("/{eventId}")
     public EventFullDto getEventById(@PathVariable("userId") long userId,
                                      @PathVariable("eventId") long eventId,

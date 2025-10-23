@@ -1,17 +1,21 @@
 package ru.practicum.event.service;
 
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventSearchParam;
+import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.dto.exeptions.ConflictException;
 import ru.practicum.dto.exeptions.InvalidRequestException;
@@ -19,27 +23,21 @@ import ru.practicum.dto.exeptions.NotFoundException;
 import ru.practicum.dto.request.requestDto.NewEventRequest;
 import ru.practicum.dto.request.requestDto.UpdateEventRequest;
 import ru.practicum.dto.user.UserDto.UserDto;
-import ru.practicum.dto.event.eventDto.EventFullDto;
-import ru.practicum.dto.event.eventDto.EventSearchParam;
-import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
-
 import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.ViewsRepository;
-
 import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.location.mapper.LocationMapper;
 import ru.practicum.location.model.Location;
 import ru.practicum.location.repository.LocationRepository;
 
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -126,12 +124,18 @@ public class EventServiceImpl implements EventService {
         updateViews(eventId, ip);
         return EventMapper.mapToFullDto(event);
     }
-
     @Transactional
     @Override
     public List<EventShortDto> getUsersEvents(Long userId, Pageable page, String ip) {
         userClient.getUserById(userId).orElseThrow(() -> new NotFoundException("User", userId));
-        Page<Event> events = eventRepository.findByInitiator(userId, page);
+
+        Pageable sortedPage = PageRequest.of(
+                page.getPageNumber(),
+                page.getPageSize(),
+                Sort.by("createdOn").descending().and(Sort.by("id").ascending())
+        );
+
+        Page<Event> events = eventRepository.findByInitiator(userId, sortedPage);
         events.forEach(event -> updateViews(event.getId(), ip));
         log.info("Получаем все опубликованные мероприятия для пользователя id = {}: размер списка: {}, " +
                 "список меропритий: {}", userId, events.getSize(), events.getContent());
@@ -180,8 +184,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Boolean updateConfirmedRequests(Long eventId, Integer requestAmount) {
-        eventRepository.updateConfirmedRequests(eventId,requestAmount);
+    @Transactional
+    public Boolean updateConfirmedRequests(Long eventId, Integer increment) {
+        log.info("Мы обновляем Event с id {}, на {}", eventId, increment);
+        eventRepository.incrementConfirmedRequests(eventId,increment);
         return true;
     }
 
@@ -271,23 +277,23 @@ public class EventServiceImpl implements EventService {
             log.error("Конец выборки находится во временной шкале раньше начала");
             throw new InvalidRequestException("Время окончания выборки не может быть раньше времени начала");
         }
+
         return (root, query, cb) -> {
             log.info("Начинаем фильтрацию переданных параметров");
             List<Predicate> predicates = new ArrayList<>();
             List<String> predicateLogs = new ArrayList<>();
 
             log.info("Проводим фильтрацию по пользователям {}", searchParam.getUsers());
-            if (searchParam.getUsers() != null && !searchParam.getUsers().isEmpty() &&
-                    searchParam.getUsers().getFirst() != 0) {
-                predicateLogs.add("Пользователи: " + searchParam.getUsers());
-                predicates.add(root.get("initiator").in(searchParam.getUsers()));
+            if (searchParam.getUsers() != null && !searchParam.getUsers().isEmpty()) {
+                List<Long> validUsers = searchParam.getUsers().stream()
+                        .filter(userId -> userId != null && userId > 0)
+                        .collect(Collectors.toList());
+                if (!validUsers.isEmpty()) {
+                    predicateLogs.add("Пользователи: " + validUsers);
+                    predicates.add(root.get("initiator").in(validUsers));
+                }
             }
-            //TODO
-//            if (searchParam.getUsers() != null && !searchParam.getUsers().isEmpty() &&
-//                    searchParam.getUsers().getFirst() != 0) {
-//                predicateLogs.add("Пользователи: " + searchParam.getUsers());
-//                predicates.add(root.get("initiator").in(searchParam.getUsers())); // ← ИСПРАВЛЕНО
-//            }
+
 
             log.info("Проводим фильтрацию по состояниям {}", searchParam.getStates());
             if (searchParam.getStates() != null && !searchParam.getStates().isEmpty()) {
@@ -295,14 +301,20 @@ public class EventServiceImpl implements EventService {
                 predicates.add(root.get("state").in(searchParam.getStates()));
             }
 
+            // Фильтр по категориям - игнорируем нулевые значения
             log.info("Проводим фильтрацию по категориям {}", searchParam.getCategories());
-            if (searchParam.getCategories() != null && !searchParam.getCategories().isEmpty() &&
-                    searchParam.getCategories().getFirst() != 0) {
-                predicateLogs.add("Категории: " + searchParam.getCategories());
-                predicates.add(root.get("category").get("id").in(searchParam.getCategories()));
+            if (searchParam.getCategories() != null && !searchParam.getCategories().isEmpty()) {
+                List<Long> validCategories = searchParam.getCategories().stream()
+                        .filter(catId -> catId != null && catId > 0)
+                        .collect(Collectors.toList());
+                if (!validCategories.isEmpty()) {
+                    predicateLogs.add("Категории: " + validCategories);
+                    predicates.add(root.get("category").get("id").in(validCategories));
+                }
             }
 
-            log.info("Проводим фильтарацию по временным рамкам: {}, {}", rangeStart, rangeEnd);
+
+            log.info("Проводим фильтрацию по временным рамкам: {}, {}", rangeStart, rangeEnd);
             if (rangeStart != null && rangeEnd != null) {
                 log.info("Фильтрация по времени начала мероприятия, начальное время: {} конечное время {}",
                         rangeStart, rangeEnd);
@@ -328,30 +340,23 @@ public class EventServiceImpl implements EventService {
                 }
             }
 
+
             log.info("Проводим текстовый поиск по запросу {}", searchParam.getText());
-            if (searchParam.getText() != null) {
-                String searchText = searchParam.getText().toLowerCase();
+            if (searchParam.getText() != null && !searchParam.getText().trim().isEmpty()) {
+                String searchText = searchParam.getText().toLowerCase().trim();
 
-                if (searchText.isEmpty() || searchText.isBlank()) {
-                    log.info("Текстовый поиск не выполняется - строка пуста");
-                } else if ("0".equals(searchText)) {
-                    log.info("Обнаружено значение '0' в текстовом поиске");
-                } else {
-                    log.info("Создание предиката для поиска по текстовому запросу в аннотации");
-                    Predicate annotationPredicate = cb.like(
-                            cb.lower(root.get("annotation")),
-                            "%" + searchText + "%"
-                    );
+                Predicate annotationPredicate = cb.like(
+                        cb.lower(root.get("annotation")),
+                        "%" + searchText + "%"
+                );
 
-                    log.info("Создание предиката для поиска по текстовому запросу в описании");
-                    Predicate descriptionPredicate = cb.like(
-                            cb.lower(root.get("description")),
-                            "%" + searchText + "%"
-                    );
-                    predicateLogs.add("Поиск по текстовому запросу: " + searchParam.getText());
-                    log.info("Объединяем предикаты для поиска в обоих полях");
-                    predicates.add(cb.or(annotationPredicate, descriptionPredicate));
-                }
+                Predicate descriptionPredicate = cb.like(
+                        cb.lower(root.get("description")),
+                        "%" + searchText + "%"
+                );
+                predicateLogs.add("Поиск по текстовому запросу: " + searchParam.getText());
+                log.info("Объединяем предикаты для поиска в обоих полях");
+                predicates.add(cb.or(annotationPredicate, descriptionPredicate));
             }
 
             log.info("Добавляем сортировку по параметру {}", searchParam.getSort());
@@ -363,7 +368,7 @@ public class EventServiceImpl implements EventService {
                         break;
                     case "VIEWS":
                         predicateLogs.add("Поиск с сортировкой по: VIEWS");
-                        query.orderBy(cb.asc(root.get("views")));
+                        query.orderBy(cb.desc(root.get("views"))); // Обычно по убыванию
                         break;
                 }
             }
@@ -371,24 +376,22 @@ public class EventServiceImpl implements EventService {
             log.info("Проводим поиск по paid {}", searchParam.getPaid());
             if (searchParam.getPaid() != null) {
                 predicateLogs.add("Поиск по paid с флагом: " + searchParam.getPaid());
-                predicates.add(cb.lessThanOrEqualTo(root.get("paid"), searchParam.getPaid()));
+                predicates.add(cb.equal(root.get("paid"), searchParam.getPaid())); // Используем equal вместо lessThanOrEqualTo
             }
 
             log.info("Проводим поиск по onlyAvailable {}", searchParam.getOnlyAvailable());
             if (searchParam.getOnlyAvailable() != null && searchParam.getOnlyAvailable()) {
-                Expression<Integer> limitExpr = root.get("participantLimit");
-                Expression<Integer> requestsExpr = root.get("confirmedRequests");
-                Predicate limitNotZero = cb.notEqual(limitExpr, 0);
-                if (limitNotZero != null) {
-                    predicateLogs.add("Поиск при participantLimit больше 0 и onlyAvailable с флагом: "
-                            + searchParam.getOnlyAvailable());
-                    predicates.add(cb.lessThan(requestsExpr, limitExpr));
-                }
+                Predicate unlimitedEvents = cb.equal(root.get("participantLimit"), 0);
+                Predicate availableEvents = cb.lessThan(root.get("confirmedRequests"), root.get("participantLimit"));
+
+                predicateLogs.add("Поиск только доступных событий");
+                predicates.add(cb.or(unlimitedEvents, availableEvents));
             }
 
             log.info("Количество собранных предикатов {}", predicates.size());
             log.info("Возвращаем лист с параметрами поиска: {}", predicateLogs);
-            return cb.and(predicates.toArray(new Predicate[0]));
+
+            return predicates.isEmpty() ? cb.conjunction() : cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

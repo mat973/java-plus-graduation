@@ -67,7 +67,7 @@ public class EventRequestServiceImpl implements EventRequestService {
                     event.getParticipantLimit(), event.getConfirmedRequests());
             throw new RequestModerationException(eventId, "Лимит заявок исчерпан");
         }
-        if (eventClient.getByIdAndInitiator(eventId, userId).isPresent()) {
+        if (event.getInitiator().getId().equals(userId)) {
             log.error("Заявка не была отправлена: нельзя отправить заявку на собственное мероприятие");
             throw new RequestModerationException(eventId, "Нельзя отправить заявку на собственное мероприятие");
         }
@@ -148,11 +148,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         log.info("Определен инициатор события {}", user);
         EventFullDto event = eventClient.getEventById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event", eventId));
-
-        if (!event.getInitiator().equals(userId)) {
-            log.error("Пользователь id={} не является инициатором события id={}", userId, eventId);
-            throw new ConflictException("У пользователя нет доступа к данному событию");
-        }
+        log.info(" EventDTO INFO : {}", event);
 
         List<EventRequest> requests = eventRequestRepository.findByRequestIds(requestIds);
         if (requests.stream().anyMatch(eventRequest -> !eventRequest.getStatus().equals(Status.PENDING))) {
@@ -225,8 +221,9 @@ public class EventRequestServiceImpl implements EventRequestService {
         log.info("Количество обновленных записей: {}", update);
     }
 
-    private void updateConfirmedRequest(EventFullDto event, int requests) {
-        if (!eventClient.updateConfirmedRequests(event.getId(), event.getConfirmedRequests() + requests)){
+    private void updateConfirmedRequest(EventFullDto event, int increment) {
+        log.info("Мы обновляем для even : {}, увеличивая подтверждение на Increment {}", event, increment);
+        if (!eventClient.incrementConfirmedRequests(event.getId(), increment)) {
             throw new TimeOutException("Не получилось обновить");
         }
     }

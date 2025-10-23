@@ -22,7 +22,7 @@
 		<module>core/user-service</module>
 		<module>core/dto-module</module>
         <module>core/request-service</module>
-		<module>core/event-srvice</module>
+		<module>core/event-service</module>
 	</modules>
 
 	<properties>

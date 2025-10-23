@@ -14,32 +14,32 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users/{userId}/events")
+@RequestMapping("/users/{userId}/comments")
 @Slf4j
 public class UsersCommentController {
     private final CommentService commentService;
 
-    @GetMapping("/comments")
+    @GetMapping()
     public List<CommentDto> getUserComments(@PathVariable Long userId) {
         log.info("Получение всех комментариев пользователя id = {}", userId);
         return commentService.getCommentsByUser(userId);
     }
 
-    @GetMapping("/comments/{eventId}")
+    @GetMapping("/{eventId}")
     public List<CommentDto> getEventComments(@PathVariable Long userId,
                                              @PathVariable Long eventId) {
         log.info("Получение всех комментариев для мероприятия id = {}", eventId);
         return commentService.getCommentsByEvent(eventId);
     }
 
-    @GetMapping("/comments/{commentId}")
+    @GetMapping("/{commentId}")
     public CommentDto getById(@PathVariable Long userId,
                               @PathVariable Long commentId) {
         log.info("Получение комментария по id={}", commentId);
         return commentService.getById(commentId);
     }
 
-    @PostMapping("/comments/{eventId}")
+    @PostMapping("/{eventId}")
     public CommentDto addComment(@PathVariable Long userId,
                                  @PathVariable Long eventId,
                                  @Valid @RequestBody NewCommentDto dto) {
@@ -47,7 +47,7 @@ public class UsersCommentController {
         return commentService.createComment(userId, eventId, dto);
     }
 
-    @PatchMapping("/comments/{commentId}")
+    @PatchMapping("/{commentId}")
     public CommentDto editComment(@PathVariable Long userId,
                                   @PathVariable Long commentId,
                                   @Valid @RequestBody NewCommentDto dto) {
@@ -55,7 +55,7 @@ public class UsersCommentController {
         return commentService.updateComment(userId, commentId, dto);
     }
 
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable Long userId,
                               @PathVariable Long commentId) {

@@ -82,8 +82,8 @@ public class PublicEventController {
     }
 
     @GetMapping("/{eventId}/feign")
-    public Optional<EventFullDto> getEventById(@PathVariable Long id){
-        return eventService.getEventByIdFeign(id);
+    public Optional<EventFullDto> getEventById(@PathVariable Long eventId){
+        return eventService.getEventByIdFeign(eventId);
     }
 
     @GetMapping("/{eventId}/{userId}/feign")
@@ -92,8 +92,8 @@ public class PublicEventController {
         return eventService.getEventByIdAndInitiator(eventId, userId);
     }
 
-    @PutMapping("/{eventId}/{requestAmount}/feign")
-    public Boolean updateConfirmedRequests(@PathVariable Long eventId, @PathVariable Integer requestAmount){
-        return eventService.updateConfirmedRequests(eventId, requestAmount);
+    @PutMapping("/{eventId}/{increment}/feign")
+    public Boolean updateConfirmedRequests(@PathVariable Long eventId, @PathVariable Integer increment){
+        return eventService.updateConfirmedRequests(eventId, increment);
     }
 }

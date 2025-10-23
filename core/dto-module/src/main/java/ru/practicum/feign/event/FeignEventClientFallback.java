@@ -16,7 +16,9 @@ public class FeignEventClientFallback implements FeignEventClient{
     }
 
     @Override
-    public Boolean updateConfirmedRequests(Long eventId, Integer requestAmount) {
+    public Boolean incrementConfirmedRequests(Long eventId, Integer increment) {
         return Boolean.FALSE;
     }
+
+
 }

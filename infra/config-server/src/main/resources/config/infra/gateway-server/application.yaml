@@ -23,7 +23,10 @@ spring:
           uri: lb://request-service
           predicates:
             - Path=/users/{userId}/requests/**
-
+        - id: request-service
+          uri: lb://request-service
+          predicates:
+            - Path=/users/{userId}/events/{eventId}/requests
         # === COMMENT SERVICE ===
         - id: comment-service-admin
           uri: lb://comment-service
@@ -51,7 +54,14 @@ spring:
           uri: lb://event-service
           predicates:
             - Path=/events/**, /categories/**, /compilations/**
-
+        - id: categories-admin-service
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/categories/**
+        - id: compilation-admin-service
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/compilations/**
 #eureka:
 #  client:
 #    register-with-eureka: true

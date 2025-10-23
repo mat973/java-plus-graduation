@@ -34,3 +34,16 @@ CREATE TABLE IF NOT EXISTS events (
     created_on TIMESTAMP NOT NULL,
     published_on TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS compilation_event (
+    compilation_id BIGINT REFERENCES compilations(id) ON DELETE CASCADE,
+    event_id BIGINT REFERENCES events(id) ON DELETE CASCADE,
+    PRIMARY KEY (compilation_id, event_id)
+);
+
+CREATE TABLE IF NOT EXISTS views (
+    id SERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL,
+    ip VARCHAR(45) NOT NULL,
+    CONSTRAINT unique_event_ip UNIQUE (event_id, ip)
+);

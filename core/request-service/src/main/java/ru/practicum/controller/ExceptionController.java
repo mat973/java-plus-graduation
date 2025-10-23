@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.dto.exeptions.InvalidRequestException;
-import ru.practicum.dto.exeptions.NotValidUserException;
-import ru.practicum.dto.exeptions.RequestModerationException;
-import ru.practicum.dto.exeptions.TimeOutException;
+import ru.practicum.dto.exeptions.*;
 import ru.practicum.dto.exeptions.dto.ExceptionDto;
 
 import java.time.LocalDateTime;
@@ -20,6 +17,17 @@ import java.time.format.DateTimeFormatter;
 public class ExceptionController {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ExceptionDto handlerConflict(ConflictException e) {
+        log.error("Обрабатываем исключение ConflictException");
+        return ExceptionDto.builder()
+                .status(HttpStatus.CONFLICT.toString())
+                .reason("for the requested operation the conditions are not met.")
+                .message(e.getMessage())
+                .timestamp(LocalDateTime.now().format(FORMATTER))
+                .build();
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -32,8 +40,10 @@ public class ExceptionController {
                 .timestamp(LocalDateTime.now().format(FORMATTER))
                 .build();
     }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ExceptionDto handleRequestModeration(final RequestModerationException e) {
+    public ExceptionDto handleRequestModeration(RequestModerationException e) {
         log.error("Обрабатываем исключение RequestModerationException");
         return ExceptionDto.builder()
                 .status(HttpStatus.CONFLICT.toString())
@@ -54,6 +64,8 @@ public class ExceptionController {
                 .timestamp(LocalDateTime.now().format(FORMATTER))
                 .build();
     }
+
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
