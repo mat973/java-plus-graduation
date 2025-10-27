@@ -17,7 +17,7 @@
 
     <modules>
         <module>avro-schemas</module>
-        <module>proto-schematic</module>
+        <module>proto-schemas</module>
     </modules>
 
 
