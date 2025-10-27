@@ -25,8 +25,8 @@ public class CollectorController extends CollectUserActionGrpc.CollectUserAction
         log.info("Выполняю какое то действие с User Actions {}", request);
         try {
 
-            collectorService.sendToKafka("stats.user-actions.v1", avroRecord);
-            collectorService.sendToKafka("stats.events-similarity.v1", avroRecord);
+            collectorService.sendToKafka("stats.user-actions.v1", userActionMapper.toAvro(request));
+            collectorService.sendToKafka("stats.events-similarity.v1", userActionMapper.toAvro(request));
 
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
