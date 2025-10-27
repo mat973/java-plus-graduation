@@ -16,11 +16,4 @@ spring:
     password: dbuser
     driver-class-name: org.postgresql.Driver
 
-logging:
-  level:
-    org.springframework.orm.jpa: INFO
-    org.springframework.transaction: INFO
-    org.springframework.transaction.interceptor: TRACE
-    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
-
 #stat-server-url: http://stats-server:9090
