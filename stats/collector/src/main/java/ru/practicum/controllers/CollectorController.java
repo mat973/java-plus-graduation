@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.mapper.UserActionMapper;
-import ru.practicum.model.UserActions;
+
 import ru.practicum.service.CollectorService;
 import ru.yandex.practicum.grpc.stats.action.CollectUserActionGrpc;
 import stats.messages.collector.UserAction;
@@ -25,7 +25,11 @@ public class CollectorController extends CollectUserActionGrpc.CollectUserAction
         log.info("Выполняю какое то действие с User Actions {}", request);
         try {
 
-            collectorService.sendToKafka(userActionMapper.toAvro(request));
+            collectorService.sendToKafka("stats.user-actions.v1", avroRecord);
+            collectorService.sendToKafka("stats.events-similarity.v1", avroRecord);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
 
         } catch (Exception e) {
             responseObserver.onError(new StatusRuntimeException(
