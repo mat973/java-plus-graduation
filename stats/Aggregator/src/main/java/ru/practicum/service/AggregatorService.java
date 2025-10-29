@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -11,10 +12,12 @@ public class AggregatorService {
     private final Double VIEW_WEIGHT = 0.4;
     private final Double REGISTER_WEIGHT = 0.8;
     private final Double LIKE_WEIGHT = 1.0;
-    //Map<EventID, Map < UserID, WEIGHT>>
-    Map<Long, Map<Long, Double>> actionWeightMap = new HashMap<>();
+    //Map<EventId, Map < UserId, WEIGHT>>
+    private Map<Long, Map<Long, Double>> actionWeightMap = new HashMap<>();
+    //MAp<EventId, OwnWeight>
+    private Map<Long, Double> ownWeightSum = new HashMap<>();
     //Map<EventID1, Map < EventId2, sim(EventId1, EventId2)>>
-    Map<Long, Map<Long, Double>> minWeightSum = new HashMap<>();
+    private Map<Long, Map<Long, Double>> minWeightSums = new HashMap<>();
 
 
     public List<EventSimilarityAvro> aggregate(UserActionAvro action) {
@@ -35,13 +38,67 @@ public class AggregatorService {
             return answer;
         }
         usersWeight.put(action.getUserId(), actionWeight);
-        Map<Long, Double> eventShips = minWeightSum.get(action.getEventId());
+        ownWeightSum.put(action.getEventId(), ownWeightSum.getOrDefault(action.getEventId(), 0.0) +
+                actionWeight - currentWeight);
+
+        for (Long key : actionWeightMap.keySet()) {
+            if (key == action.getEventId()){
+                continue;
+            }
+            if (actionWeightMap.get(key).containsKey(action.getUserId())){
+
+
+                double minWeightSum = get(action.getEventId(), key);
+                double event2Weight = actionWeightMap.get(key).get(action.getUserId());
+                minWeightSum += Math.min(event2Weight, actionWeight) - Math.min(event2Weight, currentWeight);
+                double s1 = ownWeightSum.get(action.getEventId());
+                double s2 = ownWeightSum.get(key);
+                long eventA = Math.min(action.getEventId(), key);
+                long eventB = Math.max(action.getEventId(), key);
+                double sin = sin(s1, s2, minWeightSum);
+                EventSimilarityAvro eventSimilarityAvro = new EventSimilarityAvro();
+
+
+                eventSimilarityAvro.setEventA(eventA);
+                eventSimilarityAvro.setEventB(eventB);
+
+                eventSimilarityAvro.setScore(sin);
+                eventSimilarityAvro.setTimestamp(Instant.now());
+                answer.add(eventSimilarityAvro);
+                put(action.getEventId(), key, minWeightSum);
+            }
+        }
+
+        return answer;
 
     }
 
-    private Double sin(Long event1, Long event2) {
-
+    private double sin(double s1, double s2, double minWeightSum){
+        if (s1 == 0.0 || s2 == 0.0) {
+            return 0.0;
+        }
+        return minWeightSum / (Math.sqrt(s1) * Math.sqrt(s2));
     }
+
+    private void put(long eventA, long eventB, double sum) {
+        long first  = Math.min(eventA, eventB);
+        long second = Math.max(eventA, eventB);
+
+        minWeightSums
+                .computeIfAbsent(first, e -> new HashMap<>())
+                .put(second, sum);
+    }
+
+    private double get(long eventA, long eventB) {
+        long first  = Math.min(eventA, eventB);
+        long second = Math.max(eventA, eventB);
+
+        return minWeightSums
+                .computeIfAbsent(first, e -> new HashMap<>())
+                .getOrDefault(second, 0.0);
+    }
+
+
 }
 
 

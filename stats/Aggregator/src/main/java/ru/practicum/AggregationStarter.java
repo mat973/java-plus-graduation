@@ -11,6 +11,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
+import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.service.AggregatorService;
 
@@ -39,23 +40,26 @@ public class AggregationStarter {
                     if (!records.isEmpty()) {
                         try {
                             for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                                aggregatorService.aggregate((UserActionAvro) record.value()).ifPresent(snapshot -> {
-                                    producer.send(new ProducerRecord<>(
-                                            SIMILARITY_TOPIC,
-                                            null,
-                                            snapshot.getTimestamp().toEpochMilli(),
-                                            snapshot.getHubId(),
-                                            snapshot
-                                    ));
-                                });
+                                List<EventSimilarityAvro> list = aggregatorService
+                                        .aggregate((UserActionAvro) record.value());
 
+                                if (list.isEmpty()) {
+                                    continue;
+                                }
+
+                                list.forEach(x -> producer.send(new ProducerRecord<>(
+                                        SIMILARITY_TOPIC,
+                                        null,
+                                        x.getEventA() + "_" + x.getEventB(),
+                                        x)));
                             }
                             consumer.commitSync();
 
                         } catch (Exception e) {
                             log.error("Ошибка при обработке батча сообщений, оффсеты не зафиксированы", e);
                         }
-                    }}
+                    }
+                }
             } catch (WakeupException ignored) {
                 log.info("Получен сигнал остановки консьюмера");
             } catch (Exception e) {
