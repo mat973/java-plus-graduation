@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package stats.service.dashboard;
 
-import "messages/analyzer/analyzer_messages.proto";
+import "stats/messages/analyzer/analyzer_messages.proto";
 
 option java_package = "ru.practicum.ewm.grpc.stats.event";
 option java_multiple_files = true;

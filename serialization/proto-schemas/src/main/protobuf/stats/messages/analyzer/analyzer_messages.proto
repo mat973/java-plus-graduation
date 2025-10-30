@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package stats.messages.analyzer;
 
-import "google/protobuf/timestamp.proto";
-
 message UserPredictionsRequestProto {
     int64 user_id = 1;
     int64 max_results = 2;
