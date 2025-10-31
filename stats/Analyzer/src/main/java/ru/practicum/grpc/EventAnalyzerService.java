@@ -1,16 +1,20 @@
 package ru.practicum.grpc;
 
 import io.grpc.stub.StreamObserver;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.ewm.grpc.stats.event.EventAnalyzerGrpc;
-import stats.messages.analyzer.*;
+import ru.practicum.service.RecommendationService;
+import stats.messages.analyzer.AnalyzerMessages;
 
 
 @Slf4j
 @GrpcService
+@RequiredArgsConstructor
 public class EventAnalyzerService extends EventAnalyzerGrpc.EventAnalyzerImplBase {
 
+    private final RecommendationService service;
     @Override
     public void getRecommendationsForUser(
             AnalyzerMessages.UserPredictionsRequestProto request,
@@ -18,14 +22,7 @@ public class EventAnalyzerService extends EventAnalyzerGrpc.EventAnalyzerImplBas
     ) {
         log.info("Получен gRPC-запрос: GetRecommendationsForUser user_id={} max_results={}",
                 request.getUserId(), request.getMaxResults());
-
-        // Пока просто возвращаем пустой результат
-        AnalyzerMessages.RecommendedEventProto response = AnalyzerMessages.RecommendedEventProto.newBuilder()
-                .setEventId(-1)
-                .setScore(0.0)
-                .build();
-
-        responseObserver.onNext(response);
+        service.getRecommendationsForUser(request).forEach(responseObserver::onNext);
         responseObserver.onCompleted();
     }
 
@@ -36,15 +33,9 @@ public class EventAnalyzerService extends EventAnalyzerGrpc.EventAnalyzerImplBas
     ) {
         log.info("Получен gRPC-запрос: GetSimilarEvents event_id={} user_id={} max_results={}",
                 request.getEventId(), request.getUserId(), request.getMaxResults());
-
-        // Возвращаем пустой стрим (заглушка)
-        AnalyzerMessages.RecommendedEventProto proto = AnalyzerMessages.RecommendedEventProto.newBuilder()
-                .setEventId(-1)
-                .setScore(0.0)
-                .build();
-
-        responseObserver.onNext(proto);
+        service.getSimilarEvents(request).forEach(responseObserver::onNext);
         responseObserver.onCompleted();
+
     }
 
     @Override
@@ -54,13 +45,7 @@ public class EventAnalyzerService extends EventAnalyzerGrpc.EventAnalyzerImplBas
     ) {
         log.info("Получен gRPC-запрос: GetInteractionsCount event_ids={}", request.getEventIdList());
 
-        // Возвращаем пустой стрим (заглушка)
-        AnalyzerMessages.RecommendedEventProto proto = AnalyzerMessages.RecommendedEventProto.newBuilder()
-                .setEventId(-1)
-                .setScore(0.0)
-                .build();
-
-        responseObserver.onNext(proto);
+        service.getInteractionsCount(request).forEach(responseObserver::onNext);
         responseObserver.onCompleted();
     }
 }

@@ -10,7 +10,7 @@ option java_multiple_files = true;
 
 service EventAnalyzer {
     rpc GetRecommendationsForUser(messages.analyzer.UserPredictionsRequestProto)
-        returns (messages.analyzer.RecommendedEventProto);
+        returns (stream messages.analyzer.RecommendedEventProto);
 
     rpc GetSimilarEvents(messages.analyzer.SimilarEventsRequestProto)
             returns (stream messages.analyzer.RecommendedEventProto);
