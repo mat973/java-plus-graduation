@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
@@ -16,11 +18,18 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
+
 public class EventSimilarityConsumer implements Runnable {
 
-    private final Consumer<Long, EventSimilarityAvro> consumer;
+
+    private final Consumer<String, EventSimilarityAvro> consumer;
     private final EventSimilarityHandler eventSimilarityHandler;
+
+    @Autowired
+    public EventSimilarityConsumer(    @Qualifier("eventKafkaConsumer") Consumer<String, EventSimilarityAvro> consumer, EventSimilarityHandler eventSimilarityHandler) {
+        this.consumer = consumer;
+        this.eventSimilarityHandler = eventSimilarityHandler;
+    }
 
     @Value("${analyzer.kafka.consumer.events.topic}")
     private String topicEventSimilarity;
@@ -35,10 +44,10 @@ public class EventSimilarityConsumer implements Runnable {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
             while (true) {
-                ConsumerRecords<Long, EventSimilarityAvro> records =
+                ConsumerRecords<String, EventSimilarityAvro> records =
                         consumer.poll(Duration.ofMillis(pollTimeout));
 
-                for (ConsumerRecord<Long, EventSimilarityAvro> record : records) {
+                for (ConsumerRecord<String, EventSimilarityAvro> record : records) {
                     EventSimilarityAvro eventSimilarity = record.value();
                     log.info("Получили коэффициент схожести: {}", eventSimilarity);
                     eventSimilarityHandler.handle(eventSimilarity);

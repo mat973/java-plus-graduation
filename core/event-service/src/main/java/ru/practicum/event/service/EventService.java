@@ -18,7 +18,7 @@ public interface EventService {
 
     EventFullDto updateEventByAdmin(Long eventId, UpdateEventRequest request);
 
-    EventFullDto getByIdPublic(Long eventId, String ip);
+    EventFullDto getByIdPublic(Long eventId, String ip, Long userId);
 
     List<EventShortDto> getUsersEvents(Long userId, Pageable page, String ip);
 
@@ -33,4 +33,8 @@ public interface EventService {
     Optional<EventFullDto> getEventByIdAndInitiator(Long eventId, Long userId);
 
     Boolean updateConfirmedRequests(Long eventId, Integer requestAmount);
+
+    List<EventFullDto> getRecommendations(Long userId);
+
+    void setLike(Long userId, Long eventId);
 }

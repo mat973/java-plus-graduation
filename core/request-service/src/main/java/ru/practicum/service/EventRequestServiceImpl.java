@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.UserActionClient;
 import ru.practicum.dto.event.eventDto.EventFullDto;
 import ru.practicum.dto.exeptions.*;
 import ru.practicum.dto.request.requestDto.Status;
@@ -23,8 +24,10 @@ import ru.practicum.model.EventRequest;
 import ru.practicum.repository.EventRequestRepository;
 
 import ru.practicum.feign.user.FeignUserClient;
+import stats.messages.collector.UserAction;
 
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,7 @@ public class EventRequestServiceImpl implements EventRequestService {
     private final FeignUserClient userClient;
     private final FeignEventClient eventClient;
     private final EventRequestRepository eventRequestRepository;
+    private final UserActionClient userActionClient;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -100,6 +104,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         }
         EventRequest savedRequest = eventRequestRepository.save(eventRequest);
         log.info("--------Заявка успешно сохранена: {}", savedRequest);
+        userActionClient.collectUserAction(eventId, userId, UserAction.ActionTypeProto.ACTION_REGISTER, Instant.now());
         return mapToEventRequestDto(savedRequest);
     }
 

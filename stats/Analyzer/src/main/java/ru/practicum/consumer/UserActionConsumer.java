@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -16,11 +18,15 @@ import java.util.List;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class UserActionConsumer implements Runnable {
 
-    private final Consumer<Long, UserActionAvro> consumer;
+public class UserActionConsumer implements Runnable {
+    private final Consumer<String, UserActionAvro> consumer;
     private final UserActionHandler userActionHandler;
+    @Autowired
+    public UserActionConsumer(UserActionHandler userActionHandler, @Qualifier("userActionKafkaConsumer") Consumer<String, UserActionAvro> consumer) {
+        this.userActionHandler = userActionHandler;
+        this.consumer = consumer;
+    }
 
     @Value("${analyzer.kafka.consumer.actions.topic}")
     private String topicUserAction;
@@ -35,10 +41,10 @@ public class UserActionConsumer implements Runnable {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
 
             while (true) {
-                ConsumerRecords<Long, UserActionAvro> records =
+                ConsumerRecords<String, UserActionAvro> records =
                         consumer.poll(Duration.ofMillis(pollTimeout));
 
-                for (ConsumerRecord<Long, UserActionAvro> record : records) {
+                for (ConsumerRecord<String, UserActionAvro> record : records) {
                     UserActionAvro action = record.value();
                     log.info("Получили действие пользователя: {}", action);
                     userActionHandler.handle(action);

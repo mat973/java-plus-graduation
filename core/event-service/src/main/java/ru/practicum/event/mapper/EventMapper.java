@@ -36,7 +36,6 @@ public class EventMapper {
                 .initiatorName(user.getName())
                 .state(State.PENDING)
                 .createdOn(LocalDateTime.now())
-                .views(0)
                 .build();
         if (request.hasParticipantLimit()) {
             event.setParticipantLimit(request.getParticipantLimit());
@@ -46,7 +45,7 @@ public class EventMapper {
         return event;
     }
 
-    public static EventShortDto mapToShortDto(Event event) {
+    public static EventShortDto mapToShortDto(Event event, double rating) {
         UserShortDto userShortDto = UserShortDto.builder()
                 .id(event.getInitiator())
                 .name(event.getInitiatorName())
@@ -59,7 +58,7 @@ public class EventMapper {
                 .initiator(userShortDto)
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .rating(rating)
                 .description(event.getDescription())
                 .participantLimit(event.getParticipantLimit())
                 .state(event.getState())
@@ -71,7 +70,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto mapToFullDto(Event event) {
+    public static EventFullDto mapToFullDto(Event event, double rating) {
         UserShortDto userShortDto = UserShortDto.builder()
                 .id(event.getInitiator())
                 .name(event.getInitiatorName())
@@ -93,7 +92,7 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .rating(rating)
                 .build();
     }
 }

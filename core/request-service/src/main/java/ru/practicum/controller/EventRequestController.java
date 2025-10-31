@@ -46,6 +46,7 @@ public class EventRequestController {
         return eventRequestService.getByEventIdAndRequesterId(eventId, userId);
     }
 
+
     @GetMapping("events/{eventId}/requests")
     public List<EventRequestDto> getRequestByEvent(@PathVariable("userId") long userId,
                                                    @PathVariable("eventId") long eventId) {
