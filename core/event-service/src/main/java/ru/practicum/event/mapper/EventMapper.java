@@ -45,7 +45,7 @@ public class EventMapper {
         return event;
     }
 
-    public static EventShortDto mapToShortDto(Event event, double rating) {
+    public static EventShortDto mapToShortDto(Event event) {
         UserShortDto userShortDto = UserShortDto.builder()
                 .id(event.getInitiator())
                 .name(event.getInitiatorName())
@@ -58,7 +58,6 @@ public class EventMapper {
                 .initiator(userShortDto)
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .rating(rating)
                 .description(event.getDescription())
                 .participantLimit(event.getParticipantLimit())
                 .state(event.getState())

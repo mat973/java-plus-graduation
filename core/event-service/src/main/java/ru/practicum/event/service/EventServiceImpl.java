@@ -172,12 +172,7 @@ public class EventServiceImpl implements EventService {
         Page<Event> events = eventRepository.findByInitiator(userId, sortedPage);
         log.info("Получаем все опубликованные мероприятия для пользователя id = {}: размер списка: {}, " +
                 "список меропритий: {}", userId, events.getSize(), events.getContent());
-        List<Long> ids = events.stream().map(Event::getId).toList();
-        Map<Long, Double> recMap = recommendationsClient.getInteractionsCount(ids).collect(Collectors.toMap(x -> x.getEventId(), x ->x.getScore()));
-
-        Stream<EventShortDto> ans = events.stream().sequential().map(x ->
-            EventMapper.mapToShortDto(x,recMap.getOrDefault(x.getId(), 0.0)));
-        return ans.toList();
+        return events.stream().map(EventMapper::mapToShortDto).toList();
     }
 
     @Transactional
@@ -190,12 +185,7 @@ public class EventServiceImpl implements EventService {
             log.info("Не найдено событий для поиска Admin API с фильтрами");
         }
         log.info("Возвращаем список мероприятий для Admin API: {}", events);
-        List<Long> ids = events.stream().map(Event::getId).toList();
-        Map<Long, Double> recMap = recommendationsClient.getInteractionsCount(ids).collect(Collectors.toMap(x -> x.getEventId(), x ->x.getScore()));
-
-        Stream<EventShortDto> ans = events.stream().sequential().map(x ->
-                EventMapper.mapToShortDto(x,recMap.getOrDefault(x.getId(), 0.0)));
-        return ans.toList();
+        return events.stream().map(EventMapper::mapToShortDto).toList();
     }
 
     @Transactional
@@ -204,13 +194,7 @@ public class EventServiceImpl implements EventService {
         log.info("Начинаем получение событий с фильтрами для Public API");
         Specification<Event> spec = createSpecification(eventSearchParam);
         List<Event> eventsModel = eventRepository.findAll(spec, page).stream().toList();
-        List<Long> ids = eventsModel.stream().map(Event::getId).toList();
-        Map<Long, Double> recMap = recommendationsClient.getInteractionsCount(ids).collect(Collectors.toMap(x -> x.getEventId(), x ->x.getScore()));
-
-        Stream<EventShortDto> ans = eventsModel.stream().sequential().map(x ->
-                EventMapper.mapToShortDto(x,recMap.getOrDefault(x.getId(), 0.0)));
-        log.info("Возвращаем список мероприятий для Public API: {}", ans);
-        return ans.toList();
+        return eventsModel.stream().map(EventMapper::mapToShortDto).toList();
     }
 
     @Override
