@@ -10,13 +10,15 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.mapper.UserActionMapper;
 
 import ru.practicum.service.CollectorService;
-import ru.yandex.practicum.grpc.stats.action.CollectUserActionGrpc;
+
+import ru.yandex.practicum.grpc.stats.action.UserActionControllerGrpc;
 import stats.messages.collector.UserAction;
 
 @GrpcService
 @Slf4j
 @RequiredArgsConstructor
-public class CollectorController extends CollectUserActionGrpc.CollectUserActionImplBase{
+public class CollectorController extends UserActionControllerGrpc.UserActionControllerImplBase {
+
     private final UserActionMapper userActionMapper;
     private final CollectorService collectorService;
 
@@ -24,7 +26,6 @@ public class CollectorController extends CollectUserActionGrpc.CollectUserAction
     public void collectUserAction(UserAction.UserActionProto request, StreamObserver<Empty> responseObserver) {
         log.info("Выполняю какое то действие с User Actions {}", request);
         try {
-
             collectorService.sendToKafka("stats.user-actions.v1", userActionMapper.toAvro(request));
 
             responseObserver.onNext(Empty.getDefaultInstance());
@@ -37,3 +38,4 @@ public class CollectorController extends CollectUserActionGrpc.CollectUserAction
         }
     }
 }
+

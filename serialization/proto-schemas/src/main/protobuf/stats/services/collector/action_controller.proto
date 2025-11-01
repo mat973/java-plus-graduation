@@ -8,7 +8,7 @@ option java_multiple_files = true;
 import "google/protobuf/empty.proto";
 import "stats/messages/collector/user_action.proto";
 
-service CollectUserAction {
+service UserActionController {
     rpc CollectUserAction (stats.messages.collector.UserActionProto)
             returns (google.protobuf.Empty);
 

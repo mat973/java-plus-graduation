@@ -3,7 +3,8 @@ package ru.practicum;
 import com.google.protobuf.Timestamp;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.grpc.stats.action.CollectUserActionGrpc;
+
+import ru.yandex.practicum.grpc.stats.action.UserActionControllerGrpc;
 import stats.messages.collector.UserAction;
 
 import java.time.Instant;
@@ -11,9 +12,9 @@ import java.time.Instant;
 @Service
 public class UserActionClient {
 
-    private final CollectUserActionGrpc.CollectUserActionBlockingStub userActionStub;
+    private final UserActionControllerGrpc.UserActionControllerBlockingStub userActionStub;
 
-    public UserActionClient(@GrpcClient("COLLECTOR") CollectUserActionGrpc.CollectUserActionBlockingStub client) {
+    public UserActionClient(@GrpcClient("COLLECTOR") UserActionControllerGrpc.UserActionControllerBlockingStub client) {
         this.userActionStub = client;
     }
 
