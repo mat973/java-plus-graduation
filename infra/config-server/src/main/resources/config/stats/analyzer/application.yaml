@@ -31,10 +31,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
 
 grpc:
   server:
-    port: 6565
+    port: 0
+    security:
+      enabled: false
 
 threadPool:
   corePoolSize: 2

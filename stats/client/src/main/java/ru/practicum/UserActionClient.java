@@ -13,7 +13,7 @@ public class UserActionClient {
 
     private final CollectUserActionGrpc.CollectUserActionBlockingStub userActionStub;
 
-    public UserActionClient(@GrpcClient("collector") CollectUserActionGrpc.CollectUserActionBlockingStub client) {
+    public UserActionClient(@GrpcClient("COLLECTOR") CollectUserActionGrpc.CollectUserActionBlockingStub client) {
         this.userActionStub = client;
     }
 

@@ -1,58 +1,133 @@
 package ru.practicum;
 
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.grpc.stats.event.EventAnalyzerGrpc;
 import stats.messages.analyzer.AnalyzerMessages;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 
 @Service
+@Slf4j
 public class RecommendationsClient {
 
     private final EventAnalyzerGrpc.EventAnalyzerBlockingStub client;
 
-    public RecommendationsClient(@GrpcClient("analyzer") EventAnalyzerGrpc.EventAnalyzerBlockingStub client) {
+    public RecommendationsClient(@GrpcClient("ANALYZER") EventAnalyzerGrpc.EventAnalyzerBlockingStub client) {
         this.client = client;
+        log.info("RecommendationsClient initialized with gRPC stub for service: ANALYZER");
     }
 
     public Stream<AnalyzerMessages.RecommendedEventProto> getRecommendationsForUser(long userId, int maxResults) {
-        AnalyzerMessages.UserPredictionsRequestProto request = AnalyzerMessages.UserPredictionsRequestProto.newBuilder()
-                .setUserId(userId)
-                .setMaxResults(maxResults)
-                .build();
+        log.debug("Getting recommendations for user: {}, maxResults: {}", userId, maxResults);
 
-        Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getRecommendationsForUser(request);
+        try {
+            AnalyzerMessages.UserPredictionsRequestProto request = AnalyzerMessages.UserPredictionsRequestProto.newBuilder()
+                    .setUserId(userId)
+                    .setMaxResults(maxResults)
+                    .build();
 
-        return asStream(iterator);
+            log.debug("Sending gRPC request: {}", request);
+            Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getRecommendationsForUser(request);
+
+            List<AnalyzerMessages.RecommendedEventProto> results = new ArrayList<>();
+            int count = 0;
+            while (iterator.hasNext()) {
+                AnalyzerMessages.RecommendedEventProto item = iterator.next();
+                results.add(item);
+                count++;
+                log.trace("Received recommendation {}: {}", count, item);
+            }
+
+            log.debug("Received {} recommendations for user: {}", count, userId);
+            return results.stream();
+
+        } catch (Exception e) {
+            log.error("Error getting recommendations for user {}: {}", userId, e.getMessage(), e);
+            throw new RuntimeException("Failed to get recommendations for user: " + userId, e);
+        }
     }
 
     public Stream<AnalyzerMessages.RecommendedEventProto> getSimilarEvents(long eventId, long userId, int maxResults) {
-        AnalyzerMessages.SimilarEventsRequestProto request = AnalyzerMessages.SimilarEventsRequestProto.newBuilder()
-                .setEventId(eventId)
-                .setUserId(userId)
-                .setMaxResults(maxResults)
-                .build();
+        log.debug("Getting similar events for event: {}, user: {}, maxResults: {}", eventId, userId, maxResults);
 
-        Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getSimilarEvents(request);
+        try {
+            AnalyzerMessages.SimilarEventsRequestProto request = AnalyzerMessages.SimilarEventsRequestProto.newBuilder()
+                    .setEventId(eventId)
+                    .setUserId(userId)
+                    .setMaxResults(maxResults)
+                    .build();
 
-        return asStream(iterator);
+            log.debug("Sending similar events request: {}", request);
+            Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getSimilarEvents(request);
+
+            List<AnalyzerMessages.RecommendedEventProto> results = new ArrayList<>();
+            int count = 0;
+            while (iterator.hasNext()) {
+                AnalyzerMessages.RecommendedEventProto item = iterator.next();
+                results.add(item);
+                count++;
+                log.trace("Received similar event {}: {}", count, item);
+            }
+
+            log.debug("Received {} similar events for event: {}", count, eventId);
+            return results.stream();
+
+        } catch (Exception e) {
+            log.error("Error getting similar events for event {}: {}", eventId, e.getMessage(), e);
+            throw new RuntimeException("Failed to get similar events for event: " + eventId, e);
+        }
     }
 
     public Stream<AnalyzerMessages.RecommendedEventProto> getInteractionsCount(List<Long> eventIds) {
-        AnalyzerMessages.InteractionsCountRequestProto request = AnalyzerMessages.InteractionsCountRequestProto.newBuilder()
-                .addAllEventId(eventIds)
-                .build();
+        log.debug("Getting interactions count for events: {}", eventIds);
 
-        Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getInteractionsCount(request);
+        try {
+            AnalyzerMessages.InteractionsCountRequestProto request = AnalyzerMessages.InteractionsCountRequestProto.newBuilder()
+                    .addAllEventId(eventIds)
+                    .build();
 
-        return asStream(iterator);
+            log.debug("Sending interactions count request for {} events", eventIds.size());
+            Iterator<AnalyzerMessages.RecommendedEventProto> iterator = client.getInteractionsCount(request);
+
+            List<AnalyzerMessages.RecommendedEventProto> results = new ArrayList<>();
+            int count = 0;
+            while (iterator.hasNext()) {
+                AnalyzerMessages.RecommendedEventProto item = iterator.next();
+                results.add(item);
+                count++;
+                log.trace("Received interaction count {}: {}", count, item);
+            }
+
+            log.debug("Received interaction counts for {} events", count);
+            return results.stream();
+
+        } catch (Exception e) {
+            log.error("Error getting interactions count for events {}: {}", eventIds, e.getMessage(), e);
+            throw new RuntimeException("Failed to get interactions count for events", e);
+        }
+    }
+
+    // Добавим метод для проверки подключения
+    public boolean isServiceAvailable() {
+        try {
+            log.debug("Checking gRPC service availability");
+            // Можно попробовать сделать простой запрос или использовать health check
+            client.getInteractionsCount(
+                    AnalyzerMessages.InteractionsCountRequestProto.newBuilder()
+                            .addEventId(0L) // тестовый ID
+                            .build()
+            ).hasNext();
+            log.debug("gRPC service is available");
+            return true;
+        } catch (Exception e) {
+            log.warn("gRPC service is not available: {}", e.getMessage());
+            return false;
+        }
     }
 
     private Stream<AnalyzerMessages.RecommendedEventProto> asStream(Iterator<AnalyzerMessages.RecommendedEventProto> iterator) {
