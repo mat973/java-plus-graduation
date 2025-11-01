@@ -4,7 +4,8 @@ import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
-import ru.practicum.ewm.grpc.stats.event.EventAnalyzerGrpc;
+
+import ru.practicum.ewm.grpc.stats.event.RecommendationsControllerGrpc;
 import ru.practicum.service.RecommendationService;
 import stats.messages.analyzer.AnalyzerMessages;
 
@@ -12,7 +13,7 @@ import stats.messages.analyzer.AnalyzerMessages;
 @Slf4j
 @GrpcService
 @RequiredArgsConstructor
-public class EventAnalyzerService extends EventAnalyzerGrpc.EventAnalyzerImplBase {
+public class EventAnalyzerService extends RecommendationsControllerGrpc.RecommendationsControllerImplBase {
 
     private final RecommendationService service;
     @Override
