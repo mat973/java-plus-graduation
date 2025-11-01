@@ -83,7 +83,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>3.3.2</version>
                 <configuration>
-                    <mainClass>ru.yandex.practicum.Analyzer</mainClass>
+                    <mainClass>ru.practicum.Analyzer</mainClass>
                 </configuration>
             </plugin>
         </plugins>
