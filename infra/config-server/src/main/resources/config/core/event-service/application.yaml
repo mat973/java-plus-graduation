@@ -18,13 +18,16 @@ spring:
 
 grpc:
   client:
-    analyzer:
+    ANALYZER:
       address: 'discovery:///ANALYZER'
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
-    collector:
+    COLLECTOR:
       address: 'discovery:///COLLECTOR'
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
+logging:
+  level:
+    net.devh.boot.grpc.client: DEBUG

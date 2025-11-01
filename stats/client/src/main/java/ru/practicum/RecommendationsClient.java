@@ -112,7 +112,7 @@ public class RecommendationsClient {
         }
     }
 
-    // Добавим метод для проверки подключения
+
     public boolean isServiceAvailable() {
         try {
             log.debug("Checking gRPC service availability");
