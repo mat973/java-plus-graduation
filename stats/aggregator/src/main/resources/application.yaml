@@ -1,4 +1,6 @@
 spring:
+  main:
+    web-application-type: none
   application:
     name: aggregator
   profiles:
@@ -11,7 +13,7 @@ spring:
         enabled: true
         serviceId: config-server
 server:
-  port: 0
+  port: 8083
 eureka:
   client:
     serviceUrl:
@@ -19,5 +21,6 @@ eureka:
   instance:
     preferIpAddress: true
     hostname: localhost
+    non-secure-port: ${server.port}
     instance-id: "${spring.application.name}:${random.value}"
     leaseRenewalIntervalInSeconds: 10
