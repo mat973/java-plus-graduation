@@ -55,15 +55,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>ru.practicum.AggregatorApplication</mainClass>
-                    <classifier>exec</classifier>
-                </configuration>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
+                        <configuration>
+                            <mainClass>ru.practicum.Aggregator</mainClass>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
