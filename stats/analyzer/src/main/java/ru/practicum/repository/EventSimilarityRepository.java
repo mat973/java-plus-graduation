@@ -23,19 +23,19 @@ public interface EventSimilarityRepository extends JpaRepository<EventSimilarity
     List<EventSimilarity> findSimilarEventsExcludingUserEvents(List<Long> eventIds, Pageable pageable);
 
     @Query("""
-    SELECT ua.eventId, ua.mark
-    FROM UserAction ua
-    WHERE ua.userId = :userId
-""")
+                SELECT ua.eventId, ua.mark
+                FROM UserAction ua
+                WHERE ua.userId = :userId
+            """)
     List<Object[]> findEventMarksByUserId(Long userId);
 
 
     @Query("""
-    SELECT e FROM EventSimilarity e
-    WHERE (e.eventA IN :eventIds AND e.eventB NOT IN :eventIds)
-       OR (e.eventB IN :eventIds AND e.eventA NOT IN :eventIds)
-    """)
-    List<EventSimilarity> findSimilarPairsForEvents( List<Long> eventIds);
+            SELECT e FROM EventSimilarity e
+            WHERE (e.eventA IN :eventIds AND e.eventB NOT IN :eventIds)
+               OR (e.eventB IN :eventIds AND e.eventA NOT IN :eventIds)
+            """)
+    List<EventSimilarity> findSimilarPairsForEvents(List<Long> eventIds);
 
     List<EventSimilarity> findByEventAOrEventB(Long eventA, Long eventB);
 }

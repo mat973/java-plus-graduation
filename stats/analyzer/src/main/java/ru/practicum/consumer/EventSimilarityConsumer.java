@@ -1,6 +1,5 @@
 package ru.practicum.consumer;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -26,7 +25,7 @@ public class EventSimilarityConsumer implements Runnable {
     private final EventSimilarityHandler eventSimilarityHandler;
 
     @Autowired
-    public EventSimilarityConsumer(    @Qualifier("eventKafkaConsumer") Consumer<String, EventSimilarityAvro> consumer, EventSimilarityHandler eventSimilarityHandler) {
+    public EventSimilarityConsumer(@Qualifier("eventKafkaConsumer") Consumer<String, EventSimilarityAvro> consumer, EventSimilarityHandler eventSimilarityHandler) {
         this.consumer = consumer;
         this.eventSimilarityHandler = eventSimilarityHandler;
     }

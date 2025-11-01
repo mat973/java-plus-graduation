@@ -32,7 +32,8 @@ public class GrpcServerExceptionHandler {
                                         super.close(status, trailers);
                                     }
                                 }
-                            }, headers)) {};
+                            }, headers)) {
+                    };
                 }
             });
         };

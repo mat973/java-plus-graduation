@@ -49,7 +49,6 @@ public class KafkaConfig {
     private String eventsValueDeserializer;
 
 
-
     @Bean
     public Properties actionConsumerProps() {
         Properties props = new Properties();

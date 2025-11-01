@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.practicum.model.EventSimilarity;
 import ru.practicum.repository.EventSimilarityRepository;
 import ru.practicum.repository.UserActionRepository;

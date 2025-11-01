@@ -5,7 +5,10 @@ import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AggregatorService {
@@ -42,10 +45,10 @@ public class AggregatorService {
                 actionWeight - currentWeight);
 
         for (Long key : actionWeightMap.keySet()) {
-            if (key == action.getEventId()){
+            if (key == action.getEventId()) {
                 continue;
             }
-            if (actionWeightMap.get(key).containsKey(action.getUserId())){
+            if (actionWeightMap.get(key).containsKey(action.getUserId())) {
 
 
                 double minWeightSum = get(action.getEventId(), key);
@@ -73,7 +76,7 @@ public class AggregatorService {
 
     }
 
-    private double sin(double s1, double s2, double minWeightSum){
+    private double sin(double s1, double s2, double minWeightSum) {
         if (s1 == 0.0 || s2 == 0.0) {
             return 0.0;
         }
@@ -81,7 +84,7 @@ public class AggregatorService {
     }
 
     private void put(long eventA, long eventB, double sum) {
-        long first  = Math.min(eventA, eventB);
+        long first = Math.min(eventA, eventB);
         long second = Math.max(eventA, eventB);
 
         minWeightSums
@@ -90,7 +93,7 @@ public class AggregatorService {
     }
 
     private double get(long eventA, long eventB) {
-        long first  = Math.min(eventA, eventB);
+        long first = Math.min(eventA, eventB);
         long second = Math.max(eventA, eventB);
 
         return minWeightSums

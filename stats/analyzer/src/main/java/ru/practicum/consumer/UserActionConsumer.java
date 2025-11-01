@@ -1,6 +1,5 @@
 package ru.practicum.consumer;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -22,6 +21,7 @@ import java.util.List;
 public class UserActionConsumer implements Runnable {
     private final Consumer<String, UserActionAvro> consumer;
     private final UserActionHandler userActionHandler;
+
     @Autowired
     public UserActionConsumer(UserActionHandler userActionHandler, @Qualifier("userActionKafkaConsumer") Consumer<String, UserActionAvro> consumer) {
         this.userActionHandler = userActionHandler;

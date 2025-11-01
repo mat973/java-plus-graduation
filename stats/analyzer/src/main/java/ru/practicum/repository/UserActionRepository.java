@@ -20,10 +20,10 @@ public interface UserActionRepository extends JpaRepository<UserAction, Long> {
     List<Long> findEventIdsOrderByMaxMarkDesc(Long userId, Pageable pageable);
 
     @Query("""
-    SELECT ua.eventId, ua.mark
-    FROM UserAction ua
-    WHERE ua.userId = :userId
-""")
+                SELECT ua.eventId, ua.mark
+                FROM UserAction ua
+                WHERE ua.userId = :userId
+            """)
     List<Object[]> findEventMarksByUserId(Long userId);
 
 
@@ -31,11 +31,11 @@ public interface UserActionRepository extends JpaRepository<UserAction, Long> {
     List<Long> findEventIdsByUserId(Long userId);
 
     @Query("""
-    SELECT ua.eventId, SUM(ua.mark)
-    FROM UserAction ua
-    WHERE ua.eventId IN :eventIds
-    GROUP BY ua.eventId
-    """)
+            SELECT ua.eventId, SUM(ua.mark)
+            FROM UserAction ua
+            WHERE ua.eventId IN :eventIds
+            GROUP BY ua.eventId
+            """)
     List<Object[]> sumMarksForEvents(List<Long> eventIds);
 
     List<UserAction> findAllByUserId(Long userId);
