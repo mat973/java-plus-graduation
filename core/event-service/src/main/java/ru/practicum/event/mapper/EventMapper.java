@@ -1,22 +1,17 @@
 package ru.practicum.event.mapper;
 
 
-
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
+import ru.practicum.dto.event.eventDto.EventFullDto;
+import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.dto.request.requestDto.NewEventRequest;
 import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.dto.user.UserDto.UserShortDto;
-import ru.practicum.dto.event.eventDto.EventFullDto;
-import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.model.Event;
-
-
 import ru.practicum.location.mapper.LocationMapper;
-
 import ru.practicum.location.model.Location;
-
 
 import java.time.LocalDateTime;
 
@@ -36,7 +31,6 @@ public class EventMapper {
                 .initiatorName(user.getName())
                 .state(State.PENDING)
                 .createdOn(LocalDateTime.now())
-                .views(0)
                 .build();
         if (request.hasParticipantLimit()) {
             event.setParticipantLimit(request.getParticipantLimit());
@@ -59,7 +53,6 @@ public class EventMapper {
                 .initiator(userShortDto)
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
                 .description(event.getDescription())
                 .participantLimit(event.getParticipantLimit())
                 .state(event.getState())
@@ -71,7 +64,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto mapToFullDto(Event event) {
+    public static EventFullDto mapToFullDto(Event event, double rating) {
         UserShortDto userShortDto = UserShortDto.builder()
                 .id(event.getInitiator())
                 .name(event.getInitiatorName())
@@ -93,7 +86,7 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(event.getViews())
+                .rating(rating)
                 .build();
     }
 }

@@ -4,7 +4,7 @@ import ru.practicum.dto.event.eventDto.EventFullDto;
 
 import java.util.Optional;
 
-public class FeignEventClientFallback implements FeignEventClient{
+public class FeignEventClientFallback implements FeignEventClient {
     @Override
     public Optional<EventFullDto> getEventById(Long id) {
         return Optional.empty();

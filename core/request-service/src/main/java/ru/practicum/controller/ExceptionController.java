@@ -66,7 +66,6 @@ public class ExceptionController {
     }
 
 
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ExceptionDto notValidUserExceptionHandler(TimeOutException e) {
