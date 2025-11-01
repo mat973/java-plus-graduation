@@ -14,8 +14,8 @@
     <modules>
         <module>client</module>
         <module>collector</module>
-        <module>Aggregator</module>
-        <module>Analyzer</module>
+        <module>aggregator</module>
+        <module>analyzer</module>
     </modules>
 
 </project>
