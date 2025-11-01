@@ -3,7 +3,7 @@ package ru.practicum;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.grpc.stats.event.EventAnalyzerGrpc;
+import ru.practicum.ewm.grpc.stats.event.RecommendationsControllerGrpc;
 import stats.messages.analyzer.AnalyzerMessages;
 
 import java.util.*;
@@ -15,9 +15,9 @@ import java.util.stream.StreamSupport;
 @Slf4j
 public class RecommendationsClient {
 
-    private final EventAnalyzerGrpc.EventAnalyzerBlockingStub client;
+    private final RecommendationsControllerGrpc.RecommendationsControllerBlockingStub client;
 
-    public RecommendationsClient(@GrpcClient("ANALYZER") EventAnalyzerGrpc.EventAnalyzerBlockingStub client) {
+    public RecommendationsClient(@GrpcClient("ANALYZER") RecommendationsControllerGrpc.RecommendationsControllerBlockingStub client) {
         this.client = client;
         log.info("RecommendationsClient initialized with gRPC stub for service: ANALYZER");
     }

@@ -8,7 +8,7 @@ option java_package = "ru.practicum.ewm.grpc.stats.event";
 option java_multiple_files = true;
 
 
-service EventAnalyzer {
+service RecommendationsController {
     rpc GetRecommendationsForUser(messages.analyzer.UserPredictionsRequestProto)
         returns (stream messages.analyzer.RecommendedEventProto);
 
