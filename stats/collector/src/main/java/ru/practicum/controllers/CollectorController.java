@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.mapper.UserActionMapper;
-
 import ru.practicum.service.CollectorService;
-
 import ru.yandex.practicum.grpc.stats.action.UserActionControllerGrpc;
 import stats.messages.collector.UserAction;
 

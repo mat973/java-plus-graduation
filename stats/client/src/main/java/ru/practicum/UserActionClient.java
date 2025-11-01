@@ -3,7 +3,6 @@ package ru.practicum;
 import com.google.protobuf.Timestamp;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
-
 import ru.yandex.practicum.grpc.stats.action.UserActionControllerGrpc;
 import stats.messages.collector.UserAction;
 

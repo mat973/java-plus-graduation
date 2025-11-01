@@ -2,20 +2,17 @@ package ru.practicum.service.serviceImpl;
 
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.dto.exeptions.EmailMustBeUniqueException;
 import ru.practicum.dto.exeptions.UserNotExistException;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.mappers.UserMapper;
 import ru.practicum.model.User;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.service.UserService;
-
 
 import java.util.List;
 import java.util.Optional;

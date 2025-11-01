@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.event.model.Event;
 
-
-
 import java.util.List;
 import java.util.Optional;
 

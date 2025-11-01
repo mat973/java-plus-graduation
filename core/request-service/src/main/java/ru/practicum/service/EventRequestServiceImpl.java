@@ -9,23 +9,22 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.UserActionClient;
 import ru.practicum.dto.event.eventDto.EventFullDto;
-import ru.practicum.dto.exeptions.*;
-import ru.practicum.dto.request.requestDto.Status;
-import ru.practicum.dto.user.UserDto.UserDto;
-
+import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.exeptions.NotFoundException;
+import ru.practicum.dto.exeptions.NotValidUserException;
+import ru.practicum.dto.exeptions.RequestModerationException;
+import ru.practicum.dto.exeptions.TimeOutException;
 import ru.practicum.dto.request.requestDto.EventRequestDto;
 import ru.practicum.dto.request.requestDto.EventRequestUpdateDto;
 import ru.practicum.dto.request.requestDto.EventRequestUpdateResult;
-import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.request.requestDto.Status;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.feign.event.FeignEventClient;
+import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.mapper.EventRequestMapper;
 import ru.practicum.model.EventRequest;
-
 import ru.practicum.repository.EventRequestRepository;
-
-import ru.practicum.feign.user.FeignUserClient;
 import stats.messages.collector.UserAction;
-
 
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -9,15 +9,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.UserActionClient;
 import ru.practicum.dto.event.eventDto.EventFullDto;
 import ru.practicum.dto.event.eventDto.EventSearchParam;
 import ru.practicum.dto.event.eventDto.EventShortDto;
 import ru.practicum.event.service.EventService;
 import stats.messages.collector.UserAction;
 
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -71,28 +68,28 @@ public class PublicEventController {
     }
 
     @GetMapping("/{eventId}/feign")
-    public Optional<EventFullDto> getEventById(@PathVariable Long eventId){
+    public Optional<EventFullDto> getEventById(@PathVariable Long eventId) {
         return eventService.getEventByIdFeign(eventId);
     }
 
     @GetMapping("/{eventId}/{userId}/feign")
     public Optional<EventFullDto> getEventByIdAndInitiator(@PathVariable Long eventId,
-                                                           @PathVariable Long userId){
+                                                           @PathVariable Long userId) {
         return eventService.getEventByIdAndInitiator(eventId, userId);
     }
 
     @PutMapping("/{eventId}/{increment}/feign")
-    public Boolean updateConfirmedRequests(@PathVariable Long eventId, @PathVariable Integer increment){
+    public Boolean updateConfirmedRequests(@PathVariable Long eventId, @PathVariable Integer increment) {
         return eventService.updateConfirmedRequests(eventId, increment);
     }
 
     @GetMapping("/recommendations")
-    public List<EventFullDto> getRecommendationEvent(@RequestHeader("X-EWM-USER-ID") Long userId){
+    public List<EventFullDto> getRecommendationEvent(@RequestHeader("X-EWM-USER-ID") Long userId) {
         return eventService.getRecommendations(userId);
     }
 
     @PutMapping("/{eventId}/like")
-    public void setLike(@RequestHeader("X-EWM-USER-ID") Long userId, @PathVariable Long eventId){
+    public void setLike(@RequestHeader("X-EWM-USER-ID") Long userId, @PathVariable Long eventId) {
         eventService.setLike(userId, eventId);
     }
 }

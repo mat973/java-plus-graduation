@@ -250,21 +250,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public void setLike(Long userId, Long eventId) {
         Optional<Event> optEvent = eventRepository.findById(eventId);
-        if (optEvent.isEmpty()){
+        if (optEvent.isEmpty()) {
             throw new NotFoundException("Event  с Id " + eventId + " не найдено");
         }
-        if (optEvent.get().getInitiator() == userId){
+        if (optEvent.get().getInitiator() == userId) {
             throw new InvalidRequestException("Нельзя поставить лайк своему событию");
         }
         UserDto user = userClient.getUserById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id=" + userId + " not found"));
 
         Optional<EventRequestDto> optReq = likeClient.getByEventIdAndRequesterId(eventId, userId);
-        if (optReq.isEmpty()){
+        if (optReq.isEmpty()) {
             throw new InvalidRequestException("Невозможно получить запрос на участие событии");
         }
 
-        if (!optReq.get().getStatus().equals(CONFIRMED)){
+        if (!optReq.get().getStatus().equals(CONFIRMED)) {
             throw new InvalidRequestException("Нельзя поставить лайк не участвуя в событии");
         }
         statClient.collectUserAction(eventId, userId, UserAction.ActionTypeProto.ACTION_LIKE, Instant.now());

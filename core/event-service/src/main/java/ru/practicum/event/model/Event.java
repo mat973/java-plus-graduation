@@ -7,8 +7,6 @@ import ru.practicum.category.model.Category;
 import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.location.model.Location;
 
-
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 

@@ -20,7 +20,6 @@
 		<module>infra</module>
 		<module>stats</module>
 		<module>core</module>
-		<module>serialization</module>
 	</modules>
 
 	<properties>
