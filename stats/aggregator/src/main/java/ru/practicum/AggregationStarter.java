@@ -12,7 +12,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
-import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.service.AggregatorService;
 
 import java.time.Duration;
@@ -38,10 +37,10 @@ public class AggregationStarter {
                 while (true) {
                     ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofSeconds(1));
                     if (!records.isEmpty()) {
-                        try {
-                            for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                        for (ConsumerRecord<String, SpecificRecordBase> record : records) {
+                            try {
                                 List<EventSimilarityAvro> list = aggregatorService
-                                        .aggregate((UserActionAvro) record.value());
+                                        .aggregate(record.value());
 
                                 if (list.isEmpty()) {
                                     continue;
@@ -52,12 +51,12 @@ public class AggregationStarter {
                                         null,
                                         x.getEventA() + "_" + x.getEventB(),
                                         x)));
-                            }
-                            consumer.commitSync();
+                            } catch (Exception e) {
+                                log.error("Ошибка обработки сообщения с ключом: {}", record.key(), e);
 
-                        } catch (Exception e) {
-                            log.error("Ошибка при обработке батча сообщений, оффсеты не зафиксированы", e);
+                            }
                         }
+                        consumer.commitSync();
                     }
                 }
             } catch (WakeupException ignored) {

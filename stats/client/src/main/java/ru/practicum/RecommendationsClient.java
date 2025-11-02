@@ -116,7 +116,6 @@ public class RecommendationsClient {
     public boolean isServiceAvailable() {
         try {
             log.debug("Checking gRPC service availability");
-            // Можно попробовать сделать простой запрос или использовать health check
             client.getInteractionsCount(
                     AnalyzerMessages.InteractionsCountRequestProto.newBuilder()
                             .addEventId(0L) // тестовый ID

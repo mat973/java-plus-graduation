@@ -1,5 +1,6 @@
 package ru.practicum.service;
 
+import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
@@ -15,15 +16,17 @@ public class AggregatorService {
     private final Double VIEW_WEIGHT = 0.4;
     private final Double REGISTER_WEIGHT = 0.8;
     private final Double LIKE_WEIGHT = 1.0;
-    //Map<EventId, Map < UserId, WEIGHT>>
     private Map<Long, Map<Long, Double>> actionWeightMap = new HashMap<>();
-    //MAp<EventId, OwnWeight>
     private Map<Long, Double> ownWeightSum = new HashMap<>();
-    //Map<EventID1, Map < EventId2, sim(EventId1, EventId2)>>
     private Map<Long, Map<Long, Double>> minWeightSums = new HashMap<>();
 
 
-    public List<EventSimilarityAvro> aggregate(UserActionAvro action) {
+    public List<EventSimilarityAvro> aggregate(SpecificRecordBase recordBase) {
+        if (!(recordBase instanceof UserActionAvro action)) {
+            throw new IllegalArgumentException(
+                    "Unsupported record type: " + recordBase.getClass().getName()
+            );
+        }
         List<EventSimilarityAvro> answer = new ArrayList<>();
         Map<Long, Double> usersWeight = actionWeightMap.computeIfAbsent(
                 action.getEventId(),

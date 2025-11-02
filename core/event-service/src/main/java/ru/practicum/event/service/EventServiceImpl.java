@@ -43,7 +43,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.practicum.dto.request.requestDto.Status.CONFIRMED;
 
@@ -340,16 +339,6 @@ public class EventServiceImpl implements EventService {
             event.setTitle(request.getTitle());
         }
     }
-
-//    private void updateViews(Long eventId, String ip) {
-//        log.info("Сохраняем ip для Event id = {}", eventId);
-//        viewsRepository.upsertNative(eventId, ip);
-//        log.info("Обновляем счетчик просмотров для мероприятия id = {}", eventId);
-//        Integer eventViews = viewsRepository.countByEventId(eventId);
-//        if (eventViews > 0) {
-//            eventRepository.updateViews(eventId, eventViews);
-//        }
-//    }
 
     private Specification<Event> createSpecification(final EventSearchParam searchParam) {
         LocalDateTime rangeStart = searchParam.getRangeStart();
