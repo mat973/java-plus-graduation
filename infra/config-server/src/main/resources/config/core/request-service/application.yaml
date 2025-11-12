@@ -15,3 +15,11 @@ spring:
     username: dbuser
     password: dbuser
     driver-class-name: org.postgresql.Driver
+
+grpc:
+  client:
+    COLLECTOR:
+      address: 'discovery:///COLLECTOR'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

@@ -44,8 +44,6 @@ public class ExceptionController {
     }
 
 
-
-
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionDto handlerValidEventDay(final MethodArgumentNotValidException e) {
         log.error("Обрабатываем исключение MethodArgumentNotValidException");

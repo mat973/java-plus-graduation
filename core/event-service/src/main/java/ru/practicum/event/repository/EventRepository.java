@@ -11,8 +11,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.dto.event.eventDto.State;
 import ru.practicum.event.model.Event;
 
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -26,15 +24,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByIdAndInitiator(Long id, Long initiatorId);
 
     List<Event> findAll(Specification<Event> spec, Pageable pageable);
-
-    @Modifying
-    @Query("UPDATE Event e SET e.views = e.views + 1 WHERE e.id IN :ids")
-    void incrementViews(@Param("ids") List<Long> ids);
-
-    @Modifying
-    @Query("UPDATE Event e SET e.views = :views WHERE e.id = :eventId")
-    void updateViews(@Param("eventId") Long eventId,
-                     @Param("views") int views);
 
     @Modifying
     @Query("UPDATE Event e SET e.confirmedRequests = e.confirmedRequests + :increment WHERE e.id = :eventId")

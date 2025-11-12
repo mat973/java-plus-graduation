@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.dto.request.requestDto.Status;
 import ru.practicum.model.EventRequest;
 
-
-
 import java.util.List;
 import java.util.Optional;
 

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.dto.request.requestDto.Status;
 
-
 import java.time.LocalDateTime;
 
 @Entity

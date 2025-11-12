@@ -4,7 +4,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.practicum.dto.request.requestDto.EventRequestDto;
-import ru.practicum.feign.event.FeignEventClientFallback;
 
 import java.util.Optional;
 

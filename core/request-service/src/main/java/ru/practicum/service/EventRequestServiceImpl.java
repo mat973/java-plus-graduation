@@ -7,24 +7,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.UserActionClient;
 import ru.practicum.dto.event.eventDto.EventFullDto;
-import ru.practicum.dto.exeptions.*;
-import ru.practicum.dto.request.requestDto.Status;
-import ru.practicum.dto.user.UserDto.UserDto;
-
+import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.exeptions.NotFoundException;
+import ru.practicum.dto.exeptions.NotValidUserException;
+import ru.practicum.dto.exeptions.RequestModerationException;
+import ru.practicum.dto.exeptions.TimeOutException;
 import ru.practicum.dto.request.requestDto.EventRequestDto;
 import ru.practicum.dto.request.requestDto.EventRequestUpdateDto;
 import ru.practicum.dto.request.requestDto.EventRequestUpdateResult;
-import ru.practicum.dto.event.eventDto.State;
+import ru.practicum.dto.request.requestDto.Status;
+import ru.practicum.dto.user.UserDto.UserDto;
 import ru.practicum.feign.event.FeignEventClient;
+import ru.practicum.feign.user.FeignUserClient;
 import ru.practicum.mapper.EventRequestMapper;
 import ru.practicum.model.EventRequest;
-
 import ru.practicum.repository.EventRequestRepository;
+import stats.messages.collector.UserAction;
 
-import ru.practicum.feign.user.FeignUserClient;
-
-
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,7 @@ public class EventRequestServiceImpl implements EventRequestService {
     private final FeignUserClient userClient;
     private final FeignEventClient eventClient;
     private final EventRequestRepository eventRequestRepository;
+    private final UserActionClient userActionClient;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -100,6 +103,7 @@ public class EventRequestServiceImpl implements EventRequestService {
         }
         EventRequest savedRequest = eventRequestRepository.save(eventRequest);
         log.info("--------Заявка успешно сохранена: {}", savedRequest);
+        userActionClient.collectUserAction(eventId, userId, UserAction.ActionTypeProto.ACTION_REGISTER, Instant.now());
         return mapToEventRequestDto(savedRequest);
     }
 
